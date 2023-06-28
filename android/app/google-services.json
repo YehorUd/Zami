@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "618640597187",
+    "project_id": "zami-1082f",
+    "storage_bucket": "zami-1082f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618640597187:android:554835007a2a6bfc5ec276",
+        "android_client_info": {
+          "package_name": "com.example.zami"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "618640597187-a108jhecjhs3mj6d3u2qq7k4artsmols.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zami",
+            "certificate_hash": "8af0de069399eba1eecfd34974ddfe5295e83b6a"
+          }
+        },
+        {
+          "client_id": "618640597187-4m93ip3uoub5jlgvho1vttfpk1140f2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrYrQaufd7PoDDgtD5S1yp0xskZBkB0oo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "618640597187-4m93ip3uoub5jlgvho1vttfpk1140f2f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
