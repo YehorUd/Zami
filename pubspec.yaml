@@ -57,23 +57,23 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  assets:
-    - lib/assets/images/drinks.jpg
-    - lib/assets/images/pizza.jpg
-    - lib/assets/images/hamburger.jpg
-    - lib/assets/images/CaesarBurger.jpg
-    - lib/assets/images/Calzone.jpg
-    - lib/assets/images/ChefBurger.jpg
-    - lib/assets/images/Coca-Cola05l.jpg
-    - lib/assets/images/Pepsi05l.jpg
-    - lib/assets/images/Sprite05l.jpg
-    - lib/assets/images/CrabsBurger.jpg
-    - lib/assets/images/Pizza-Napoletana.jpg
-    - lib/assets/images/Pizza-Romana.jpg
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  assets:
+    - assets/images/drinks.png
+    - assets/images/pizza.png
+    - assets/images/hamburger.png
+    - assets/images/CaesarBurger.jpg
+    - assets/images/Calzone.jpg
+    - assets/images/ChefBurger.jpg
+    - assets/images/Coca-Cola05l.jpg
+    - assets/images/Pepsi05l.jpg
+    - assets/images/Sprite05l.jpg
+    - assets/images/CrabsBurger.jpg
+    - assets/images/Pizza-Napoletana.jpg
+    - assets/images/Pizza-Romana.jpg
   # To add assets to your application, add an assets section, like this:
   # assets:

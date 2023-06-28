@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'products_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zami/repository/product_repository.dart';
 
 class CategoriesPage extends StatelessWidget {
@@ -17,48 +16,69 @@ class CategoriesPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: FutureBuilder<QuerySnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('products')
-                .doc('categories')
-                .collection('drinks')
-                .get(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final categories = snapshot.data!.docs;
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: categories.map((category) {
-                    final categoryName = category['name'];
-                    final categoryImage = category['image'];
-
-                    return ElevatedButton(
-                      onPressed: () {
-                        navigateToProductsPage(context, categoryName);
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            child: Image.network(
-                              categoryImage,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(categoryName),
-                        ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  navigateToProductsPage(context, 'Pizzas');
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset(
+                        'assets/images/pizza.png',
+                        fit: BoxFit.cover,
                       ),
-                    );
-                  }).toList(),
-                );
-              } else if (snapshot.hasError) {
-                return Text('Wystąpił błąd: ${snapshot.error}');
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
+                    ),
+                    SizedBox(height: 8),
+                    Text('Pizzas'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  navigateToProductsPage(context, 'Hamburgers');
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset(
+                        'assets/images/hamburger.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('Hamburgers'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  navigateToProductsPage(context, 'Napoje');
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset(
+                        "assets/images/drinks.png",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('Napoje'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

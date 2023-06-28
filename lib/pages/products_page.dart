@@ -4,14 +4,18 @@ import 'package:zami/repository/product_repository.dart';
 
 class ProductsPage extends StatefulWidget {
   final ProductRepository productRepository;
-  final String category;
+  final String? category;
 
-  const ProductsPage({Key? key, required this.productRepository, required this.category})
-      : super(key: key);
+  const ProductsPage({
+    Key? key,
+    required this.productRepository,
+    this.category,
+  }) : super(key: key);
 
   @override
   _ProductsPageState createState() => _ProductsPageState();
 }
+
 class _ProductsPageState extends State<ProductsPage> {
   List<Product> products = [];
 
@@ -22,7 +26,9 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> fetchProducts() async {
-    final productList = await widget.productRepository.getProductsByCategory(widget.category);
+    final productList = widget.category != null
+        ? await widget.productRepository.getProductsByCategory(widget.category!)
+        : await widget.productRepository.getAllProducts();
     setState(() {
       products = productList;
     });
@@ -63,7 +69,7 @@ class _ProductsPageState extends State<ProductsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(product.name),
-                      Text('Price: \$${product.price.toStringAsFixed(2)}'),
+                      Text('${product.price.toStringAsFixed(2)} zł'),
                     ],
                   ),
                 );

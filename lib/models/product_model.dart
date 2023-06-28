@@ -18,7 +18,7 @@ class Product {
     return Product(
       name: data['name'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
-      category: '',
+      category: data['category'] ?? '',
       imageName: data['imageName'],
     );
   }
