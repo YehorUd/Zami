@@ -18,6 +18,8 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   List<Product> products = [];
+  List<String> cartItems = [];
+  Set<int> favoriteIndices = Set<int>();
 
   @override
   void initState() {
@@ -35,6 +37,22 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
+  void addToCart(String productName) {
+    setState(() {
+      cartItems.add(productName);
+    });
+  }
+
+  void toggleFavorite(int index) {
+    setState(() {
+      if (favoriteIndices.contains(index)) {
+        favoriteIndices.remove(index);
+      } else {
+        favoriteIndices.add(index);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,16 +63,31 @@ class _ProductsPageState extends State<ProductsPage> {
         children: [
           Padding(
             padding: EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  'Nazwa',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Nazwa',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Cena',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                SizedBox(height: 8.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Cena',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -64,13 +97,37 @@ class _ProductsPageState extends State<ProductsPage> {
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final product = products[index];
+                final isFavorite = favoriteIndices.contains(index);
+
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(product.name),
-                      Text('${product.price.toStringAsFixed(2)} zł'),
+                      Expanded(
+                        child: Text(product.name),
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          children: [
+                            Text(
+                              '${product.price.toStringAsFixed(2)} zł',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(width: 8.0),
+                            IconButton(
+                              onPressed: () {
+                                toggleFavorite(index);
+                              },
+                              icon: Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 );
