@@ -21,7 +21,7 @@ class CategoriesPage extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  navigateToProductsPage(context, 'Pizzas');
+                  navigateToProductsPage(context, 'pizzas');
                 },
                 child: Column(
                   children: [
@@ -41,7 +41,7 @@ class CategoriesPage extends StatelessWidget {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  navigateToProductsPage(context, 'Hamburgers');
+                  navigateToProductsPage(context, 'hamburgers');
                 },
                 child: Column(
                   children: [
@@ -61,7 +61,7 @@ class CategoriesPage extends StatelessWidget {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  navigateToProductsPage(context, 'Napoje');
+                  navigateToProductsPage(context, 'napoje');
                 },
                 child: Column(
                   children: [

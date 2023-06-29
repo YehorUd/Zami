@@ -26,7 +26,10 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> fetchProducts() async {
-    final productList = await widget.productRepository.getProductsByCategory(widget.category ?? '');
+    print('Category: ${widget.category}');
+    final productList = widget.category != null
+        ? await widget.productRepository.getProductsByCategory(widget.category!)
+        : await widget.productRepository.getAllProducts();
     setState(() {
       products = productList;
     });
