@@ -25,7 +25,7 @@ class _ProductsPageState extends State<ProductsPage> {
   void initState() {
     super.initState();
     fetchProducts();
-    cartItems = []; // Inicjalizacja listy cartItems
+    cartItems = [];
   }
 
   Future<void> fetchProducts() async {
@@ -38,22 +38,22 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
-  void addToCart(String productName, int quantity) {
+  void addToCart(String productName, double? price, int quantity) {
     setState(() {
       final existingCartItem = cartItems.firstWhere(
             (item) => item.productName == productName,
-        orElse: () => CartItem(productName: productName, quantity: 0),
+        orElse: () => CartItem(productName: productName, price: 0, quantity: 0),
       );
 
       if (existingCartItem.quantity > 0) {
         cartItems.remove(existingCartItem);
       }
 
-      cartItems.add(CartItem(productName: productName, quantity: quantity));
+      cartItems.add(CartItem(productName: productName, price: price ?? 0, quantity: quantity));
     });
   }
 
-  void _showQuantityDialog(String productName) {
+  void _showQuantityDialog(String productName, double price) {
     int quantity = 1;
 
     showDialog(
@@ -103,8 +103,8 @@ class _ProductsPageState extends State<ProductsPage> {
               actions: [
                 ElevatedButton(
                   onPressed: () {
-                    addToCart(productName, quantity);
-                    Navigator.of(context).pop(); // Zamknij tylko okno dialogowe
+                    addToCart(productName, price, quantity);
+                    Navigator.of(context).pop();
                   },
                   child: Row(
                     children: [
@@ -124,7 +124,6 @@ class _ProductsPageState extends State<ProductsPage> {
       },
     );
   }
-
   void _openCartPage() {
     Navigator.push(
       context,
@@ -156,13 +155,14 @@ class _ProductsPageState extends State<ProductsPage> {
                   child: Text(
                     'Nazwa',
                     style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(width: 16.0),
                 Expanded(
                   child: Text(
                     'Cena',
                     style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -171,39 +171,33 @@ class _ProductsPageState extends State<ProductsPage> {
           Expanded(
             child: ListView.builder(
               itemCount: products.length,
-              itemBuilder: (context, index) {
+              itemBuilder: (BuildContext context, int index) {
                 final product = products[index];
+                final imageName = product.imageName;
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                return ListTile(
+                  leading: SizedBox(
+                    width: 60.0,
+                    height: 60.0,
+                    child: Image.asset('assets/images/$imageName.jpg'),
+                  ),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Text(product.name),
-                      ),
-                      SizedBox(width: 16.0),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Text(
-                              '${product.price.toStringAsFixed(2)} zł',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 8.0),
-                            GestureDetector(
-                              onTap: () {
-                                _showQuantityDialog(product.name);
-                              },
-                              child: Icon(
-                                Icons.shopping_cart,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
+                      Text(product.name),
+                      Text(
+                        '${product.price} zł',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
+                  ),
+                  trailing: IconButton(
+                    onPressed: () {
+                      _showQuantityDialog(product.name, product.price);
+                    },
+                    icon: Icon(Icons.add_shopping_cart),
                   ),
                 );
               },

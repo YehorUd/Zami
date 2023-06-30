@@ -41,7 +41,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
+        title: Text('Rejestracja'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -59,7 +59,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: 'Hasło',
               ),
             ),
             SizedBox(height: 24.0),

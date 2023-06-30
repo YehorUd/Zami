@@ -70,8 +70,8 @@ class CategoriesPage extends StatelessWidget {
       String label,
       ) {
     return SizedBox(
-      width: 120,
-      height: 120,
+      width: 140,  // Zwiększamy szerokość przycisku
+      height: 140, // Zwiększamy wysokość przycisku
       child: ElevatedButton(
         onPressed: () {
           navigateToProductsPage(context, category);
@@ -93,6 +93,14 @@ class CategoriesPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
+          textStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

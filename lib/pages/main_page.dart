@@ -6,6 +6,7 @@ import 'package:zami/pages/cart_page.dart';
 import 'package:zami/pages/login_page.dart';
 import 'package:zami/repository/product_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:zami/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zami',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: appTheme, // Ustawienie motywu z klasy AppTheme
       home: MainPage(),
     );
   }
@@ -43,7 +42,7 @@ class _MainPageState extends State<MainPage> {
 
   late List<Widget> _screens = [
     CategoriesPage(productRepository: productRepository),
-    ProductsPage(productRepository: productRepository, category: null), // Update the category value here
+    ProductsPage(productRepository: productRepository, category: null),
     CartPage(cartItems: []),
   ];
 
@@ -102,4 +101,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
