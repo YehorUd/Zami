@@ -1,6 +1,6 @@
 # zami
 
-Zami - Zamów mnie. Order me.
+Zami - Zamów mnie(Order me).
 A simple application where you can order fast food.
 
 ## Getting Started
