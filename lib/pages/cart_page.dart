@@ -148,7 +148,7 @@ class _CartPageState extends State<CartPage> {
                     ),
                     ElevatedButton(
                       onPressed: _checkout,
-                      child: Text('Przejdź do zakupu'),
+                      child: Text('Zamówić'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       ),
