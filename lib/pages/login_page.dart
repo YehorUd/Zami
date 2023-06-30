@@ -110,45 +110,47 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Logowanie'),
         automaticallyImplyLeading: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Hasło',
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Hasło',
+                  ),
+                  obscureText: true,
                 ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () => _signInWithEmailAndPassword(context),
-                child: const Text('Zaloguj się'),
-              ),
-              const SizedBox(height: 16.0),
-              SignInButton(
-                Buttons.Google,
-                text: "Zaloguj się przez Google",
-                onPressed: () => _signInWithGoogle(context),
-              ),
-              const SizedBox(height: 16.0),
-              SignInButtonBuilder(
-                text: 'Zarejestruj się przez E-mail',
-                icon: Icons.email,
-                onPressed: () => _navigateToRegistrationPage(context),
-                backgroundColor: Colors.blueGrey[700]!,
-              ),
-            ],
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => _signInWithEmailAndPassword(context),
+                  child: const Text('Zaloguj się'),
+                ),
+                const SizedBox(height: 16.0),
+                SignInButton(
+                  Buttons.Google,
+                  text: "Zaloguj się przez Google",
+                  onPressed: () => _signInWithGoogle(context),
+                ),
+                const SizedBox(height: 16.0),
+                SignInButtonBuilder(
+                  text: 'Zarejestruj się przez E-mail',
+                  icon: Icons.email,
+                  onPressed: () => _navigateToRegistrationPage(context),
+                  backgroundColor: Colors.blueGrey[700]!,
+                ),
+              ],
+            ),
           ),
         ),
       ),
