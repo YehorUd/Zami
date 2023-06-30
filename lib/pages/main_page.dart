@@ -42,8 +42,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   late List<Widget> _screens = [
-    ProductsPage(productRepository: productRepository, category: null), // Update the category value here
     CategoriesPage(productRepository: productRepository),
+    ProductsPage(productRepository: productRepository, category: null), // Update the category value here
     CartPage(cartItems: []),
   ];
 
@@ -86,12 +86,12 @@ class _MainPageState extends State<MainPage> {
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_basket),
-            label: 'Produkty',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.category),
             label: 'Kategorie',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_basket),
+            label: 'Produkty',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),
@@ -102,3 +102,4 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
+

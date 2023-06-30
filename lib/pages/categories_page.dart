@@ -19,64 +19,42 @@ class CategoriesPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  navigateToProductsPage(context, 'pizzas');
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: Image.asset(
-                        'assets/images/pizza.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text('Pizzas'),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCategoryButton(
+                    context,
+                    'pizzas',
+                    'assets/images/pizza.png',
+                    'Pizzas',
+                  ),
+                  SizedBox(width: 24),
+                  _buildCategoryButton(
+                    context,
+                    'hamburgers',
+                    'assets/images/hamburger.png',
+                    'Hamburgers',
+                  ),
+                ],
               ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  navigateToProductsPage(context, 'hamburgers');
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: Image.asset(
-                        'assets/images/hamburger.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text('Hamburgers'),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  navigateToProductsPage(context, 'napoje');
-                },
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: Image.asset(
-                        "assets/images/drinks.png",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text('Napoje'),
-                  ],
-                ),
+              SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCategoryButton(
+                    context,
+                    'drinks',
+                    'assets/images/drinks.png',
+                    'Napoje',
+                  ),
+                  SizedBox(width: 24),
+                  _buildCategoryButton(
+                    context,
+                    null,
+                    'assets/images/products.png',
+                    'Wszystkie\nprodukty',
+                  ),
+                ],
               ),
             ],
           ),
@@ -85,7 +63,42 @@ class CategoriesPage extends StatelessWidget {
     );
   }
 
-  void navigateToProductsPage(BuildContext context, String category) {
+  Widget _buildCategoryButton(
+      BuildContext context,
+      String? category,
+      String imagePath,
+      String label,
+      ) {
+    return SizedBox(
+      width: 120,
+      height: 120,
+      child: ElevatedButton(
+        onPressed: () {
+          navigateToProductsPage(context, category);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void navigateToProductsPage(BuildContext context, String? category) {
     Navigator.push(
       context,
       MaterialPageRoute(

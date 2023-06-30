@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
-  final List<String> cartItems;
+  final List<CartItem> cartItems;
 
   CartPage({required this.cartItems});
 
@@ -30,9 +30,10 @@ class _CartPageState extends State<CartPage> {
               child: ListView.builder(
                 itemCount: widget.cartItems.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final productName = widget.cartItems[index];
+                  final cartItem = widget.cartItems[index];
                   return ListTile(
-                    title: Text(productName),
+                    title: Text(cartItem.productName),
+                    subtitle: Text('Ilość: ${cartItem.quantity}'),
                   );
                 },
               ),
@@ -44,4 +45,9 @@ class _CartPageState extends State<CartPage> {
   }
 }
 
+class CartItem {
+  final String productName;
+  final int quantity;
 
+  CartItem({required this.productName, required this.quantity});
+}
