@@ -30,9 +30,14 @@ class _ProductsPageState extends State<ProductsPage> {
 
   Future<void> fetchProducts() async {
     print('Category: ${widget.category}');
-    final productList = widget.category != null
-        ? await widget.productRepository.getProductsByCategory(widget.category!)
-        : await widget.productRepository.getAllProducts();
+    List<Product> productList = [];
+
+    if (widget.category != null) {
+      productList = await widget.productRepository.getProductsByCategory(widget.category!);
+    } else {
+      productList = await widget.productRepository.getAllProducts();
+    }
+
     setState(() {
       products = productList;
     });
@@ -49,7 +54,8 @@ class _ProductsPageState extends State<ProductsPage> {
         cartItems.remove(existingCartItem);
       }
 
-      cartItems.add(CartItem(productName: productName, price: price ?? 0, quantity: quantity));
+      cartItems.add(CartItem(
+          productName: productName, price: price ?? 0, quantity: quantity));
     });
   }
 
@@ -124,6 +130,7 @@ class _ProductsPageState extends State<ProductsPage> {
       },
     );
   }
+
   void _openCartPage() {
     Navigator.push(
       context,
