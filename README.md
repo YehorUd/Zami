@@ -1,6 +1,7 @@
 # zami
 
-A new Flutter project.
+Zami - Zamów mnie. Order me.
+A simple application where you can order fast food.
 
 ## Getting Started
 
