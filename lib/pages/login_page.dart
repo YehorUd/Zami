@@ -40,6 +40,9 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black), // Zmieniono kolor tekstu na czarny
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -79,6 +82,9 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black), // Zmieniono kolor tekstu na czarny
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

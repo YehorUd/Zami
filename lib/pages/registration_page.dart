@@ -16,8 +16,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void _register() async {
     try {
-      UserCredential userCredential =
-      await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -42,7 +41,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
             content: Text('Wystąpił błąd podczas rejestracji. Sprawdź swoje dane i spróbuj ponownie.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                    color: Colors.black, // Zmieniono kolor tekstu na czarny
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
