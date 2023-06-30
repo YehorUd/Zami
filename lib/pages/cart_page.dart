@@ -38,6 +38,14 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
+  double calculateTotalPrice() {
+    double totalPrice = 0;
+    for (var cartItem in widget.cartItems) {
+      totalPrice += (cartItem.price * cartItem.quantity);
+    }
+    return totalPrice;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,14 +71,22 @@ class _CartPageState extends State<CartPage> {
                     leading: SizedBox(
                       width: 60.0,
                       height: 60.0,
-                      child: Image.asset('assets/images/${cartItem.productName}.jpg'),
+                      child: Image.asset(
+                          'assets/images/${cartItem.productName}.jpg'),
                     ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(cartItem.productName),
+                        Expanded(
+                          child: Text(
+                            cartItem.productName,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: 8.0),
                         Text(
-                          'Cena: ${cartItem.price} zł',
+                          'Cena: ${(cartItem.price * cartItem.quantity)
+                              .toStringAsFixed(2)} zł',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -92,27 +108,52 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
             SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      widget.cartItems.clear();
-                    });
-                  },
-                  icon: Icon(Icons.delete),
-                  label: Text('Usuń wszystkie'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Suma:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    Text(
+                      '${calculateTotalPrice().toStringAsFixed(2)} zł',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: _checkout,
-                  child: Text('Przejdź do zakupu'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          widget.cartItems.clear();
+                        });
+                      },
+                      icon: Icon(Icons.delete),
+                      label: Text('Usuń wszystkie'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _checkout,
+                      child: Text('Przejdź do zakupu'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -123,7 +164,7 @@ class _CartPageState extends State<CartPage> {
   }
 }
 
-class CartItem {
+  class CartItem {
   final String productName;
   final int quantity;
   final double price;

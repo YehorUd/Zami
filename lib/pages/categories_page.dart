@@ -12,6 +12,7 @@ class CategoriesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kategorie'),
+        automaticallyImplyLeading: false, // Usuń przycisk powrotu
       ),
       body: Center(
         child: Padding(
@@ -70,8 +71,8 @@ class CategoriesPage extends StatelessWidget {
       String label,
       ) {
     return SizedBox(
-      width: 140,  // Zwiększamy szerokość przycisku
-      height: 140, // Zwiększamy wysokość przycisku
+      width: 140,
+      height: 140,
       child: ElevatedButton(
         onPressed: () {
           navigateToProductsPage(context, category);

@@ -16,7 +16,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void _register() async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+      await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -33,7 +34,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
       }
     } catch (e) {
       // Obsłuż błędy rejestracji
-      print('Błąd rejestracji: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Błąd rejestracji'),
+            content: Text('Wystąpił błąd podczas rejestracji. Sprawdź swoje dane i spróbuj ponownie.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

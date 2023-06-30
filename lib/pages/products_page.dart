@@ -144,7 +144,7 @@ class _ProductsPageState extends State<ProductsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products Page'),
+        title: Text('Lista Produktów'),
         actions: [
           IconButton(
             onPressed: _openCartPage,

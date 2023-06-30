@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zami/pages/categories_page.dart';
 import 'package:zami/pages/products_page.dart';
-import 'package:zami/pages/cart_page.dart';
 import 'package:zami/pages/login_page.dart';
 import 'package:zami/repository/product_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,7 +18,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zami',
-      theme: appTheme, // Ustawienie motywu z klasy AppTheme
+      theme: appTheme,
       home: MainPage(),
     );
   }
@@ -43,7 +42,6 @@ class _MainPageState extends State<MainPage> {
   late List<Widget> _screens = [
     CategoriesPage(productRepository: productRepository),
     ProductsPage(productRepository: productRepository, category: null),
-    CartPage(cartItems: []),
   ];
 
   void _onTabSelected(int index) {
@@ -67,13 +65,14 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Zami'),
+        leading: IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: _logout,
+        ),
         actions: [
           if (user != null)
-            IconButton(
-              icon: CircleAvatar(
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
-              ),
-              onPressed: _logout,
+            CircleAvatar(
+              backgroundImage: NetworkImage(user.photoURL ?? ''),
             ),
         ],
       ),
@@ -92,12 +91,9 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.shopping_basket),
             label: 'Produkty',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Koszyk',
-          ),
         ],
       ),
     );
   }
 }
+
