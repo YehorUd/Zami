@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pay/pay.dart';
 
 class CartPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -10,7 +11,23 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  void _removeItem(int index) {
+  List<PaymentItem> get paymentItems {
+    const _paymentItems = [
+    PaymentItem(
+      amount: '10.00',
+      label: 'Product 1',
+      status: PaymentItemStatus.final_price,
+    ),
+    ];
+    return _paymentItems;
+  }
+  void onGooglePayResult(dynamic paymentResult) {
+    debugPrint(paymentResult.toString());
+  }
+
+
+
+void _removeItem(int index) {
     setState(() {
       widget.cartItems.removeAt(index);
     });
@@ -21,16 +38,22 @@ class _CartPageState extends State<CartPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Przejdź do zakupu'),
-          content: Text(
-            'Dzięki za korzystanie z mojej aplikacji! Ta możliwość będzie dostępna w przyszłej wersji Zami.',
+          title: Text('Wybierz metodę płatności:'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RawGooglePayButton(
+                onPressed: () {},
+                type: GooglePayButtonType.plain,
+              ),
+            ],
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: Text('Anuluj'),
             ),
           ],
         );
@@ -71,8 +94,7 @@ class _CartPageState extends State<CartPage> {
                     leading: SizedBox(
                       width: 60.0,
                       height: 60.0,
-                      child: Image.asset(
-                          'assets/images/${cartItem.productName}.jpg'),
+                      child: Image.asset('assets/images/${cartItem.productName}.jpg'),
                     ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,8 +107,7 @@ class _CartPageState extends State<CartPage> {
                         ),
                         SizedBox(width: 8.0),
                         Text(
-                          'Cena: ${(cartItem.price * cartItem.quantity)
-                              .toStringAsFixed(2)} zł',
+                          'Cena: ${(cartItem.price * cartItem.quantity).toStringAsFixed(2)} zł',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -143,20 +164,31 @@ class _CartPageState extends State<CartPage> {
                       icon: Icon(Icons.delete),
                       label: Text('Usuń wszystkie'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        primary: Colors.red, // Użyty primary zamiast backgroundColor
                       ),
                     ),
                     ElevatedButton(
                       onPressed: _checkout,
                       child: Text('Zamówić'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        primary: Colors.green, // Użyty primary zamiast backgroundColor
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+            // GooglePayButton
+            GooglePayButton(
+              paymentConfigurationAsset: 'assets/json/google_pay_config.json',
+              paymentItems: paymentItems,
+              type: GooglePayButtonType.pay,
+              margin: const EdgeInsets.only(top: 15.0),
+              onPaymentResult: onGooglePayResult,
+              loadingIndicator: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
           ],
         ),
       ),
@@ -164,7 +196,7 @@ class _CartPageState extends State<CartPage> {
   }
 }
 
-  class CartItem {
+class CartItem {
   final String productName;
   final int quantity;
   final double price;

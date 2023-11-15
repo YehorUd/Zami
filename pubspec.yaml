@@ -40,7 +40,8 @@ dependencies:
   google_sign_in: ^6.1.4
   flutter_signin_button: ^2.0.0
   firebase_database: ^10.2.3
-  flutter_svg: ^1.0.0
+  flutter_svg: ^2.0.0
+  pay: ^1.1.2
 
 dev_dependencies:
   flutter_test:
