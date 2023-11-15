@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'security_utils.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -9,30 +11,94 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Dodaj tę linię
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
 
   void _register() async {
     try {
+      final salt = BCrypt.gensalt();
+      final hashedPassword = hashPassword(_passwordController.text);
+      if (_emailController.text.isEmpty ||
+          _passwordController.text.isEmpty ||
+          _confirmPasswordController.text.isEmpty) {
+        // Pola e-maila, hasła i potwierdzenia hasła nie mogą być puste
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Błąd rejestracji'),
+              content: Text('Wprowadź wszystkie wymagane dane.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+      if (_passwordController.text != _confirmPasswordController.text) {
+        // Hasła nie są identyczne
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Błąd rejestracji'),
+              content: Text('Hasła nie są identyczne. Sprawdź wprowadzone dane i spróbuj ponownie.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailController.text.trim(),
+        password: hashedPassword,
       );
+
       if (userCredential.user != null) {
-        // Zarejestrowano pomyślnie
-        // Zapisz dane użytkownika do Firestore
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'email': _emailController.text,
-          'password': _passwordController.text,
+          'hashedPassword': hashedPassword,
+          'salt': salt,
         });
 
-        // Przejdź do innej strony lub wykonaj inne działania
-        Navigator.pop(context); // Powrót do strony logowania po zarejestrowaniu
+        Navigator.pop(context);
       }
+
     } catch (e) {
-      // Obsłuż błędy rejestracji
+      // Wypisz błąd Firebase w konsoli
+      print('Firebase Error: $e');
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -44,7 +110,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Text(
                   'OK',
                   style: TextStyle(
-                    color: Colors.black, // Zmieniono kolor tekstu na czarny
+                    color: Colors.black,
                   ),
                 ),
                 onPressed: () {
@@ -57,6 +123,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +147,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
             SizedBox(height: 12.0),
             TextField(
               controller: _passwordController,
-              obscureText: true,
+              obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Hasło',
+                suffixIcon: IconButton(
+                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 12.0),
+            TextField(
+              controller: _confirmPasswordController,
+              obscureText: !_isPasswordVisible,
+              decoration: InputDecoration(
+                labelText: 'Potwierdź hasło',
+                suffixIcon: IconButton(
+                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                ),
               ),
             ),
             SizedBox(height: 24.0),
