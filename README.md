@@ -1,7 +1,55 @@
-# zami
+# Zami - Zamów mnie
 
-Zami - Zamów mnie(Order me).
-A simple application where you can order fast food.
+## Overview
+
+"Zami - Zamów mnie" is a simple application that allows users to order fast food quickly. This app is developed as a part of the final project for the Computer Science program at Wrocław Academy of Business.
+
+## Table of Contents
+
+- [Features](#features)
+- [Privacy Policy](#privacy-policy)
+- [Terms of Service](#terms-of-service)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+
+## Features
+
+- **Easy Ordering**: Quickly place orders for your favorite fast food.
+- **User-Friendly Interface**: Simple and intuitive design for a seamless user experience.
+- **Secure Registration**: Register with confidence, knowing your data is handled securely.
+
+## Privacy Policy
+
+Please refer to the [Privacy Policy](./docs/privacy_policy.md) for information on how we collect, use, and protect your personal data.
+
+## Terms of Service
+
+Read the [Terms of Service](./docs/terms_of_service.md) to understand the conditions governing the use of this application.
+
+## Installation
+
+To install and run the application, follow these steps:
+
+1. Clone the repository.
+   ```bash
+   git clone https://github.com/your-username/Zami-Order-Me.git
+
+2. Navigate to the project directory.
+   cd Zami
+   flutter pub get
+
+3. Run the application.
+   flutter run
+
+## Usage
+Launch the app on your device or emulator.
+Register for an account or log in if you already have one.
+Explore the menu and place your order.
+Enjoy your fast food!
+
+## Contributing
+Contributions are welcome! If you have any ideas for improvements or find any issues, please open an issue or submit a pull request.
 
 ## Getting Started
 
