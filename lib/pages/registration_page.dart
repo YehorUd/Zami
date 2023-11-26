@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'security_utils.dart';
 import 'package:bcrypt/bcrypt.dart';
+import 'package:zami/RODO/terms_page.dart';
+import 'package:zami/RODO/privacy_policy_page.dart';
+import 'package:g_recaptcha_v3/g_recaptcha_v3.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -11,18 +14,46 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Dodaj tę linię
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+  bool _isAgreeChecked = false;
 
   void _register() async {
     try {
+      if (!_isAgreeChecked) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Błąd rejestracji'),
+              content: Text('Musisz zaakceptować warunki i politykę prywatności.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
       final salt = BCrypt.gensalt();
       final hashedPassword = hashPassword(_passwordController.text);
+
       if (_emailController.text.isEmpty ||
           _passwordController.text.isEmpty ||
           _confirmPasswordController.text.isEmpty) {
@@ -79,7 +110,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return;
       }
 
-
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: hashedPassword,
@@ -94,7 +124,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
         Navigator.pop(context);
       }
-
     } catch (e) {
       // Wypisz błąd Firebase w konsoli
       print('Firebase Error: $e');
@@ -123,9 +152,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     }
   }
+  void _navigateToTermsPage() {
+    // Tutaj nawigacja do strony z warunkami
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TermsPage()),
+    );
+  }
 
-
-
+  void _navigateToPrivacyPolicyPage() {
+    // Tutaj nawigacja do strony z polityką prywatności
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,6 +215,44 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     });
                   },
                 ),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            ListTile(
+              contentPadding: EdgeInsets.all(0),
+              leading: Checkbox(
+                value: _isAgreeChecked,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _isAgreeChecked = value!;
+                  });
+                },
+              ),
+              title: Text('Zgadzam się z '),
+              subtitle: Row(
+                children: [
+                  GestureDetector(
+                    onTap: _navigateToTermsPage,
+                    child: Text(
+                      'warunkami',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  Text(' i '),
+                  GestureDetector(
+                    onTap: _navigateToPrivacyPolicyPage,
+                    child: Text(
+                      'polityką prywatności',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 24.0),

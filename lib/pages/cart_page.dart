@@ -27,9 +27,10 @@ class _CartPageState extends State<CartPage> {
 
 
 
-void _removeItem(int index) {
+  void _removeItem(int index) {
     setState(() {
       widget.cartItems.removeAt(index);
+      Navigator.pop(context, widget.cartItems); // Pass updated list back
     });
   }
 

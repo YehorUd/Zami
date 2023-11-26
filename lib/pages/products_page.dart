@@ -131,24 +131,51 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  void _openCartPage() {
-    Navigator.push(
+  void _openCartPage() async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CartPage(cartItems: cartItems),
       ),
     );
+
+    if (result != null && result is List<CartItem>) {
+      setState(() {
+        cartItems = result;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    int cartItemsCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista Produktów'),
         actions: [
           IconButton(
             onPressed: _openCartPage,
-            icon: Icon(Icons.shopping_cart),
+            icon: Stack(
+              children: [
+                Icon(Icons.shopping_cart),
+                Positioned(
+                  right: 0,
+                  child: CircleAvatar(
+                    radius: 10,
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    child: Text(
+                      cartItemsCount.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
