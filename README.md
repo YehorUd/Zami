@@ -12,7 +12,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -40,7 +39,7 @@ To install and run the application, follow these steps:
    cd Zami
    flutter pub get
 
-3.Run the application.
+3. Run the application.
    flutter run
 
 ## Usage
