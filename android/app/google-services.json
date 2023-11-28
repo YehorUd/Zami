@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "618640597187",
+    "firebase_url": "https://zami-1082f-default-rtdb.firebaseio.com",
     "project_id": "zami-1082f",
     "storage_bucket": "zami-1082f.appspot.com"
   },
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "618640597187-4m93ip3uoub5jlgvho1vttfpk1140f2f.apps.googleusercontent.com",
+          "client_id": "618640597187-7pmf2s5ce2r0f6sfjopoc0urh2j6bqbf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "618640597187-4m93ip3uoub5jlgvho1vttfpk1140f2f.apps.googleusercontent.com",
+              "client_id": "618640597187-7pmf2s5ce2r0f6sfjopoc0urh2j6bqbf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
