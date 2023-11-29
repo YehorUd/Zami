@@ -98,13 +98,15 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
         final OAuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
+
         await _auth.signInWithCredential(credential);
         Navigator.push(
           context,
@@ -112,6 +114,8 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
+      print('Google Sign-In Error: $e');
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -124,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
               TextButton(
                 child: const Text('OK'),
                 style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black), // Zmieniono kolor tekstu na czarny
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
