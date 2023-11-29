@@ -12,7 +12,7 @@ class CategoriesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kategorie'),
-        automaticallyImplyLeading: false, // Usuń przycisk powrotu
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Padding(
@@ -49,6 +49,18 @@ class CategoriesPage extends StatelessWidget {
                     'Napoje',
                   ),
                   SizedBox(width: 24),
+                      _buildCategoryButton(
+                        context,
+                        'dodatki', // Dodano nową kategorię "Dodatki"
+                        'assets/images/dodatki.png', // Zdjęcie dla nowej kategorii
+                        'Dodatki',
+                      ),
+                  ],
+              ),
+                  SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                   _buildCategoryButton(
                     context,
                     null,
@@ -59,8 +71,8 @@ class CategoriesPage extends StatelessWidget {
               ),
             ],
           ),
+          ),
         ),
-      ),
     );
   }
 

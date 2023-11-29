@@ -79,5 +79,30 @@ flutter:
     - assets/images/Pizza-Napoletana.jpg
     - assets/images/Pizza-Romana.jpg
     - assets/images/products.png
+    - assets/images/dodatki.png
+    - assets/images/Kubełek-Frytek.jpg
+    - assets/images/Ketchup.jpg
+    - assets/images/Sos-BBQ.jpg
+    - assets/images/Sos-Czosnkowy.jpg
+    - assets/images/Sos-Majonezowy.jpg
+    - assets/images/CheeseBurger.jpg
+    - assets/images/WegetariańskiBurger.jpg
+    - assets/images/Juicy-LucyBurger.jpg
+    - assets/images/AustralianBurger.jpg
+    - assets/images/BisonBurger.jpg
+    - assets/images/BøfsandwichBurger.jpg
+    - assets/images/OnionBurger.jpg
+    - assets/images/BellyBusterBurger.jpg
+    - assets/images/Pizza-Ghetti.jpg
+    - assets/images/Pizza-Mimosa.jpg
+    - assets/images/Pizza-CityStyle.jpg
+    - assets/images/Pizza-Cubana.jpg
+    - assets/images/Pizza-Porchetta.jpg
+    - assets/images/Pizza-DeepFried.jpg
+    - assets/images/Pizza-Viennese.jpg
+    - assets/images/Woda(Gaz)05l.jpg
+    - assets/images/Woda(Niegaz)05l.jpg
+    - assets/images/MirindaZero15l.jpg
+    - assets/images/Mirinda05l.jpg
   # To add assets to your application, add an assets section, like this:
   # assets:
