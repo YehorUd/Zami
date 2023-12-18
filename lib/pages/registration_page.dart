@@ -20,8 +20,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
-  bool _isPasswordVisible = false;
+  bool _isPasswordVisible1 = false;
+  bool _isPasswordVisible2 = false;
   bool _isAgreeChecked = false;
+
 
   void _register() async {
     try {
@@ -167,100 +169,105 @@ class _RegistrationPageState extends State<RegistrationPage> {
       MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Rejestracja'),
+        centerTitle: true,
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
+      body: Center(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          constraints: BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                labelText: 'Hasło',
-                suffixIcon: IconButton(
-                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible1,
+                decoration: InputDecoration(
+                  labelText: 'Hasło',
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordVisible1 ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible1 = !_isPasswordVisible1;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _confirmPasswordController,
+                obscureText: !_isPasswordVisible2,
+                decoration: InputDecoration(
+                  labelText: 'Potwierdź hasło',
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordVisible2 ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible2 = !_isPasswordVisible2;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.0),
+              ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Checkbox(
+                  value: _isAgreeChecked,
+                  onChanged: (bool? value) {
                     setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
+                      _isAgreeChecked = value!;
                     });
                   },
                 ),
-              ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                labelText: 'Potwierdź hasło',
-                suffixIcon: IconButton(
-                  icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
+                title: Text('Zgadzam się z '),
+                subtitle: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _navigateToTermsPage,
+                      child: Text(
+                        'warunkami',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    Text(' i '),
+                    GestureDetector(
+                      onTap: _navigateToPrivacyPolicyPage,
+                      child: Text(
+                        'polityką prywatności',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            SizedBox(height: 8.0),
-            ListTile(
-              contentPadding: EdgeInsets.all(0),
-              leading: Checkbox(
-                value: _isAgreeChecked,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _isAgreeChecked = value!;
-                  });
-                },
+              SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _register,
+                child: Text('Zarejestruj się'),
               ),
-              title: Text('Zgadzam się z '),
-              subtitle: Row(
-                children: [
-                  GestureDetector(
-                    onTap: _navigateToTermsPage,
-                    child: Text(
-                      'warunkami',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  Text(' i '),
-                  GestureDetector(
-                    onTap: _navigateToPrivacyPolicyPage,
-                    child: Text(
-                      'polityką prywatności',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: _register,
-              child: Text('Zarejestruj się'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

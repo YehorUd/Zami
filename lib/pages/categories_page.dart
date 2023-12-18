@@ -12,6 +12,7 @@ class CategoriesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kategorie'),
+        centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: Center(

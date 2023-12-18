@@ -107,5 +107,6 @@ flutter:
     - assets/images/Woda(Niegaz)05l.jpg
     - assets/images/MirindaZero15l.jpg
     - assets/images/Mirinda05l.jpg
+    - assets/json/google_pay_config.json
   # To add assets to your application, add an assets section, like this:
   # assets:

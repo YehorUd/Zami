@@ -153,6 +153,7 @@ class _ProductsPageState extends State<ProductsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista Produktów'),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: _openCartPage,
@@ -179,65 +180,70 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Nazwa',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    'Cena',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: products.length,
-              itemBuilder: (BuildContext context, int index) {
-                final product = products[index];
-                final imageName = product.imageName;
-
-                return ListTile(
-                  leading: SizedBox(
-                    width: 60.0,
-                    height: 60.0,
-                    child: Image.asset('assets/images/$imageName.jpg'),
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(product.name),
-                      Text(
-                        '${product.price} zł',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+      body: Center(
+        child: Container(
+          width: 400, // Dostosuj szerokość do swoich potrzeb
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Nazwa',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
                       ),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      _showQuantityDialog(product.name, product.price);
-                    },
-                    icon: Icon(Icons.add_shopping_cart),
-                  ),
-                );
-              },
-            ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Cena',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final product = products[index];
+                    final imageName = product.imageName;
+
+                    return ListTile(
+                      leading: SizedBox(
+                        width: 60.0,
+                        height: 60.0,
+                        child: Image.asset('assets/images/$imageName.jpg'),
+                      ),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(product.name),
+                          Text(
+                            '${product.price} zł',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          _showQuantityDialog(product.name, product.price);
+                        },
+                        icon: Icon(Icons.add_shopping_cart),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

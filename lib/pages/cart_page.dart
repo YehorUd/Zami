@@ -13,19 +13,27 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<PaymentItem> get paymentItems {
     const _paymentItems = [
-    PaymentItem(
-      amount: '10.00',
-      label: 'Product 1',
-      status: PaymentItemStatus.final_price,
-    ),
+      PaymentItem(
+        amount: '10.00',
+        label: 'Product 1',
+        status: PaymentItemStatus.final_price,
+      ),
     ];
     return _paymentItems;
   }
-  void onGooglePayResult(dynamic paymentResult) {
-    debugPrint(paymentResult.toString());
+
+  Future<PaymentConfiguration> paymentConfiguration() async {
+    return PaymentConfiguration.fromAsset('json/google_pay_config.json');
   }
 
-
+  void onGooglePayResult(dynamic paymentResult) {
+    debugPrint(paymentResult.toString());
+    // Check for errors
+    if (paymentResult != null && paymentResult['status'] != 'SUCCESS') {
+      // Handle error
+      debugPrint('Google Pay Error: ${paymentResult['status']}');
+    }
+  }
 
   void _removeItem(int index) {
     setState(() {
@@ -34,7 +42,8 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  void _checkout() {
+  void _checkout() async {
+    final config = await paymentConfiguration();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -43,9 +52,42 @@ class _CartPageState extends State<CartPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              RawGooglePayButton(
-                onPressed: () {},
-                type: GooglePayButtonType.plain,
+              // Google Pay button
+              GooglePayButton(
+                paymentConfiguration: config,
+                paymentItems: paymentItems,
+                type: GooglePayButtonType.pay,
+                margin: const EdgeInsets.only(top: 15.0),
+                onPaymentResult: onGooglePayResult,
+                loadingIndicator: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              SizedBox(height: 15.0), // Add space between Google Pay and other methods
+              // Other payment methods
+              ElevatedButton(
+                onPressed: () {
+                  // Handle payment with Blik
+                  // Add your logic for Blik payment here
+                  debugPrint('Blik payment selected');
+                },
+                child: Text('Blik'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle payment with Przy odbiorze
+                  // Add your logic for Przy odbiorze payment here
+                  debugPrint('Przy odbiorze payment selected');
+                },
+                child: Text('Przy odbiorze'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle payment with kartą płatniczą
+                  // Add your logic for kartą płatniczą payment here
+                  debugPrint('Kartą płatniczą payment selected');
+                },
+                child: Text('Kartą płatniczą'),
               ),
             ],
           ),
@@ -55,6 +97,9 @@ class _CartPageState extends State<CartPage> {
                 Navigator.of(context).pop();
               },
               child: Text('Anuluj'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
             ),
           ],
         );
@@ -75,122 +120,119 @@ class _CartPageState extends State<CartPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Koszyk'),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Produkty w koszyku:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.cartItems.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final cartItem = widget.cartItems[index];
-                  return ListTile(
-                    leading: SizedBox(
-                      width: 60.0,
-                      height: 60.0,
-                      child: Image.asset('assets/images/${cartItem.productName}.jpg'),
-                    ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            cartItem.productName,
-                            overflow: TextOverflow.ellipsis,
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 400),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Produkty w koszyku:',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16.0),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.cartItems.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final cartItem = widget.cartItems[index];
+                      return ListTile(
+                        leading: SizedBox(
+                          width: 60.0,
+                          height: 60.0,
+                          child: Image.asset(
+                              'assets/images/${cartItem.productName}.jpg'),
+                        ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                cartItem.productName,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(width: 8.0),
+                            Text(
+                              'Cena: ${(cartItem.price * cartItem.quantity).toStringAsFixed(2)} zł',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        subtitle: Text('Ilość: ${cartItem.quantity}'),
+                        trailing: IconButton(
+                          onPressed: () {
+                            _removeItem(index);
+                          },
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.red,
                           ),
                         ),
-                        SizedBox(width: 8.0),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Text(
-                          'Cena: ${(cartItem.price * cartItem.quantity).toStringAsFixed(2)} zł',
+                          'Suma:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        Text(
+                          '${calculateTotalPrice().toStringAsFixed(2)} zł',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
                           ),
                         ),
                       ],
                     ),
-                    subtitle: Text('Ilość: ${cartItem.quantity}'),
-                    trailing: IconButton(
-                      onPressed: () {
-                        _removeItem(index);
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 16.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Suma:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    Text(
-                      '${calculateTotalPrice().toStringAsFixed(2)} zł',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
-                      ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              widget.cartItems.clear();
+                            });
+                          },
+                          icon: Icon(Icons.delete),
+                          label: Text('Usuń wszystkie'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: _checkout,
+                          child: Text('Zamówić'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          widget.cartItems.clear();
-                        });
-                      },
-                      icon: Icon(Icons.delete),
-                      label: Text('Usuń wszystkie'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red, // Użyty primary zamiast backgroundColor
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: _checkout,
-                      child: Text('Zamówić'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.green, // Użyty primary zamiast backgroundColor
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
-            // GooglePayButton
-            GooglePayButton(
-              paymentConfigurationAsset: 'assets/json/google_pay_config.json',
-              paymentItems: paymentItems,
-              type: GooglePayButtonType.pay,
-              margin: const EdgeInsets.only(top: 15.0),
-              onPaymentResult: onGooglePayResult,
-              loadingIndicator: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );
