@@ -22,7 +22,7 @@ class Product {
       name: data['name'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
       category: data['category'] ?? '',
-      imageName: data['imageName'] ?? '', // Dodajemy to pole
+      imageName: data['imageName'] ?? '',
     );
   }
 

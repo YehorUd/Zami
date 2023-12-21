@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pay/pay.dart';
+import 'package:zami/models/invoice.dart';
+import 'package:zami/models/customer.dart';
+import 'package:zami/models/supplier.dart';
+import 'package:zami/helper/pdf_api.dart';
+import 'dart:io';
+import 'package:zami/pages/my_invoices_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CartPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -11,15 +18,22 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  bool _isLoading = false;
+
   List<PaymentItem> get paymentItems {
-    const _paymentItems = [
+    List<PaymentItem> items = [];
+
+    double totalAmount = calculateTotalPrice();
+
+    items.add(
       PaymentItem(
-        amount: '10.00',
-        label: 'Product 1',
+        amount: totalAmount.toStringAsFixed(2),
+        label: 'Suma',
         status: PaymentItemStatus.final_price,
       ),
-    ];
-    return _paymentItems;
+    );
+
+    return items;
   }
 
   Future<PaymentConfiguration> paymentConfiguration() async {
@@ -27,22 +41,48 @@ class _CartPageState extends State<CartPage> {
   }
 
   void onGooglePayResult(dynamic paymentResult) {
-    debugPrint(paymentResult.toString());
-    // Check for errors
-    if (paymentResult != null && paymentResult['status'] != 'SUCCESS') {
-      // Handle error
+    debugPrint('Payment Result: $paymentResult');
+    debugPrint('Complete Payment Result: ${paymentResult.toString()}');
+
+    if (paymentResult != null && paymentResult['error'] == null) {
+      _completePayment();
+    } else if (paymentResult != null && paymentResult['status'] == 'CANCELED') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment canceled by user')),
+      );
+    } else {
       debugPrint('Google Pay Error: ${paymentResult['status']}');
+
+      if (paymentResult != null && paymentResult['error'] != null) {
+        final dynamic errorInfo = paymentResult['error'];
+        debugPrint('Error Code: ${errorInfo['code']}');
+        debugPrint('Error Message: ${errorInfo['message']}');
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment failed. Please try again.')),
+      );
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _removeItem(int index) {
     setState(() {
       widget.cartItems.removeAt(index);
-      Navigator.pop(context, widget.cartItems); // Pass updated list back
+      if (widget.cartItems.isEmpty) {
+        Navigator.pop(context, widget.cartItems);
+      }
     });
   }
 
   void _checkout() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final config = await paymentConfiguration();
     showDialog(
       context: context,
@@ -52,7 +92,6 @@ class _CartPageState extends State<CartPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Google Pay button
               GooglePayButton(
                 paymentConfiguration: config,
                 paymentItems: paymentItems,
@@ -63,29 +102,20 @@ class _CartPageState extends State<CartPage> {
                   child: CircularProgressIndicator(),
                 ),
               ),
-              SizedBox(height: 15.0), // Add space between Google Pay and other methods
-              // Other payment methods
+              SizedBox(height: 15.0),
               ElevatedButton(
-                onPressed: () {
-                  // Handle payment with Blik
-                  // Add your logic for Blik payment here
-                  debugPrint('Blik payment selected');
-                },
-                child: Text('Blik'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle payment with Przy odbiorze
-                  // Add your logic for Przy odbiorze payment here
-                  debugPrint('Przy odbiorze payment selected');
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _generateInvoice(); // await here
+                  _completePayment();
                 },
                 child: Text('Przy odbiorze'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  // Handle payment with kartą płatniczą
-                  // Add your logic for kartą płatniczą payment here
-                  debugPrint('Kartą płatniczą payment selected');
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _generateInvoice(); // await here
+                  _completePayment();
                 },
                 child: Text('Kartą płatniczą'),
               ),
@@ -107,12 +137,162 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
+  bool _isInvoiceGenerated = false;
+
+  void _generateReceipt() async {
+    if (!_isInvoiceGenerated) {
+      await _generateInvoice(); // await here
+      _isInvoiceGenerated = true;
+    }
+  }
+
+  void printReceipt() {
+    print('Receipt:');
+    for (var cartItem in widget.cartItems) {
+      print('${cartItem.productName} x ${cartItem.quantity} - ${cartItem.price} zł');
+    }
+    print('Total: ${calculateTotalPrice()} zł');
+  }
+
+  void _completePayment() async {
+    try {
+      final pdfFile = await _generateInvoice();
+
+      // Sprawdź uprawnienia przed otwarciem faktury
+      final status = await Permission.location.request();
+      if (status.isGranted) {
+        if (pdfFile != null) {
+          PdfApi.openFile(pdfFile);
+        } else {
+          print('Błąd: Plik PDF nie został pomyślnie wygenerowany.');
+        }
+
+        final Invoice invoice = Invoice(
+          supplier: Supplier(name: 'Twoja Firma', address: 'Adres firmy', paymentInfo: 'Informacje o płatności'),
+          customer: Customer(name: 'Klient', address: 'Adres klienta'),
+          info: InvoiceInfo(date: DateTime.now(), dueDate: DateTime.now().add(Duration(days: 7)), description: 'Opis faktury', number: '12345'),
+          items: _convertCartItemsToInvoiceItems(),
+          location: 'Miejsce',
+          totalAmount: calculateTotalPrice(),
+          paymentStatus: 'Zapłacona',
+          paymentDueDate: DateTime.now().add(Duration(days: 7)),
+          paymentMethod: 'Przy odbiorze',
+          paymentType: 'Gotówka',
+        );
+
+        // Przekieruj do MyInvoicesPage po udanej płatności
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyInvoicesPage(newInvoice: invoice),
+          ),
+        );
+
+        setState(() {
+          _isLoading = false;
+          _isInvoiceGenerated = false; // Reset the flag
+        });
+      } else {
+        // Użytkownik nie udzielił uprawnień
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Aby otworzyć fakturę, udziel uprawnień lokalizacyjnych.')),
+        );
+
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Exception during payment processing: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+
+
+  void _handlePrzyOdbiorzePayment() {
+    debugPrint('Przy odbiorze payment selected');
+    _completePayment();
+  }
+
+  void _handleKartaPlatniczaPayment() {
+    debugPrint('Kartą płatniczą payment selected');
+    _completePayment();
+  }
+
   double calculateTotalPrice() {
     double totalPrice = 0;
     for (var cartItem in widget.cartItems) {
       totalPrice += (cartItem.price * cartItem.quantity);
     }
     return totalPrice;
+  }
+
+  // New function to generate the PDF invoice
+  Future<File?> _generateInvoice() async {
+    try {
+      final supplier = Supplier(
+        name: 'Twoja Firma',
+        address: 'Adres firmy',
+        paymentInfo: 'Informacje o płatności',
+      );
+      final customer = Customer(name: 'Klient', address: 'Adres klienta');
+      final invoiceInfo = InvoiceInfo(
+        date: DateTime.now(),
+        dueDate: DateTime.now().add(Duration(days: 7)),
+        description: 'Opis faktury',
+        number: '12345',
+      );
+      final Invoice invoice = Invoice(
+        supplier: supplier,
+        customer: customer,
+        info: invoiceInfo,
+        items: _convertCartItemsToInvoiceItems(),
+        location: 'Miejsce',
+        totalAmount: calculateTotalPrice(),
+        paymentStatus: 'Zapłacona',
+        paymentDueDate: DateTime.now().add(Duration(days: 7)),
+        paymentMethod: 'Przy odbiorze',
+        paymentType: 'Gotówka',
+      );
+
+
+      final pdfFile = await PdfApi.generate(invoice);
+
+      if (pdfFile != null) {
+        // Przekazanie faktury do MyInvoicesPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyInvoicesPage(newInvoice: invoice),
+          ),
+        );
+
+        return pdfFile; // Zwracaj plik PDF, jeśli generacja zakończy się sukcesem
+      } else {
+        print('Błąd: Generowanie pliku PDF zwróciło null.');
+        return null;
+      }
+    } catch (e) {
+      print('Błąd generowania pliku PDF: $e');
+      return null;
+    }
+  }
+
+  // Dodane dla generowania faktury PDF
+  List<InvoiceItem> _convertCartItemsToInvoiceItems() {
+    return widget.cartItems
+        .map((cartItem) => InvoiceItem(
+      description: cartItem.productName,
+      date: DateTime.now(),
+      quantity: cartItem.quantity,
+      vat: 0.23, // VAT w przykładowy sposób
+      unitPrice: cartItem.price,
+    ))
+        .toList();
   }
 
   @override
@@ -220,7 +400,9 @@ class _CartPageState extends State<CartPage> {
                         ),
                         ElevatedButton(
                           onPressed: _checkout,
-                          child: Text('Zamówić'),
+                          child: _isLoading
+                              ? CircularProgressIndicator()
+                              : Text('Zamówić'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zami/pages/categories_page.dart';
 import 'package:zami/pages/products_page.dart';
+import 'package:zami/pages/my_invoices_page.dart';
 import 'package:zami/pages/login_page.dart';
 import 'package:zami/repository/product_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,6 +43,7 @@ class _MainPageState extends State<MainPage> {
   late List<Widget> _screens = [
     CategoriesPage(productRepository: productRepository),
     ProductsPage(productRepository: productRepository, category: null),
+    MyInvoicesPage(newInvoice: null), // Domyślna wartość dla newInvoice
   ];
 
   void _onTabSelected(int index) {
@@ -90,6 +92,10 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_basket),
             label: 'Produkty',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt),
+            label: 'Faktury',
           ),
         ],
       ),
