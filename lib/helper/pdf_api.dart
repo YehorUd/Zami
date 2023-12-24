@@ -30,29 +30,35 @@ class PdfApi {
     try {
       final pdf = pw.Document();
 
-      // Load the custom font
-      final fontData =
+      final fontDataRegular =
       await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
-      final ttfFont = pw.Font.ttf(fontData.buffer.asByteData());
+      final fontDataBold =
+      await rootBundle.load("assets/fonts/OpenSans-Bold.ttf");
 
-      // Instead of using pw.Text to add text, use pw.Paragraph
+      final ttfFontRegular =
+      pw.Font.ttf(fontDataRegular.buffer.asByteData());
+      final ttfFontBold = pw.Font.ttf(fontDataBold.buffer.asByteData());
+
       pdf.addPage(
         pw.MultiPage(
           theme: pw.ThemeData.withFont(
-            base: ttfFont, // Use the loaded font
+            base: ttfFontRegular,
+            bold: ttfFontBold,
           ),
           build: (context) => [
             pw.Paragraph(
               text: 'FAKTURA NR: ${invoice.info.number}',
-              style: pw.TextStyle(fontSize: 12),
+              style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
             pw.Paragraph(
               text: 'Miejscowość: ${invoice.location}',
               style: pw.TextStyle(fontSize: 12),
             ),
             pw.Paragraph(
-              text:
-              'Data wystawienia: ${Utils.formatDate(invoice.info.date)}',
+              text: 'Data wystawienia: ${Utils.formatDate(invoice.info.date)}',
               style: pw.TextStyle(fontSize: 12),
             ),
             pw.Paragraph(
@@ -72,13 +78,24 @@ class PdfApi {
 
             // Invoice items
             pw.Table.fromTextArray(
-              headers: ['Description', 'Quantity', 'Unit Price', 'Total'],
+              headers: [
+                'Opis',
+                'Ilość',
+                'Cena jedn.',
+                'Wartość netto',
+                'VAT (%)',
+                'Wartość VAT',
+                'Wartość brutto'
+              ],
               data: invoice.items
                   .map((item) => [
                 item.description,
                 item.quantity.toString(),
                 '${item.unitPrice} zł',
-                '${(item.unitPrice * item.quantity)} zł',
+                '${item.netAmount} zł',
+                '${(item.vat * 100).toStringAsFixed(2)}%',
+                '${item.vatAmount} zł',
+                '${item.grossAmount} zł',
               ])
                   .toList(),
               border: pw.TableBorder.all(),
@@ -89,8 +106,12 @@ class PdfApi {
             pw.SizedBox(height: 10), // Add some space
 
             pw.Paragraph(
-              text: 'Razem: ${Utils.formatPrice(invoice.totalAmount)} zł',
-              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+              text:
+              'Razem: ${Utils.formatPrice(invoice.grossTotalAmount)}',
+              style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
 
             pw.SizedBox(height: 10), // Add some space
@@ -118,9 +139,9 @@ class PdfApi {
         ),
       );
 
-      return saveDocument(name: 'invoice.pdf', pdf: pdf);
+      return saveDocument(name: 'faktura.pdf', pdf: pdf);
     } catch (e) {
-      print('PDF Generation Error: $e');
+      print('Błąd generowania PDF: $e');
       throw e;
     }
   }
@@ -132,6 +153,6 @@ class Utils {
   }
 
   static String formatPrice(double price) {
-    return "\$ ${price.toStringAsFixed(2)}";
+    return "${price.toStringAsFixed(2)} zł";
   }
 }

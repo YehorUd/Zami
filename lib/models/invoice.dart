@@ -1,5 +1,4 @@
-import 'package:zami/models/customer.dart';
-import 'package:zami/models/supplier.dart';
+// invoice.dart
 
 class Invoice {
   final InvoiceInfo info;
@@ -9,7 +8,9 @@ class Invoice {
 
   // Additional properties
   final String location;
-  final double totalAmount;
+  final double netTotalAmount;
+  final double vatTotalAmount;
+  final double grossTotalAmount;
   final String paymentStatus;
   final DateTime paymentDueDate;
   final String paymentMethod;
@@ -21,7 +22,9 @@ class Invoice {
     required this.customer,
     required this.items,
     required this.location,
-    required this.totalAmount,
+    required this.netTotalAmount,
+    required this.vatTotalAmount,
+    required this.grossTotalAmount,
     required this.paymentStatus,
     required this.paymentDueDate,
     required this.paymentMethod,
@@ -50,11 +53,41 @@ class InvoiceItem {
   final double vat;
   final double unitPrice;
 
+  // Additional fields
+  final double netAmount;
+  final double vatAmount;
+  final double grossAmount;
+
   const InvoiceItem({
     required this.description,
     required this.date,
     required this.quantity,
     required this.vat,
     required this.unitPrice,
+    required this.netAmount,
+    required this.vatAmount,
+    required this.grossAmount,
+  });
+}
+
+class Supplier {
+  final String name;
+  final String address;
+  final String paymentInfo;
+
+  const Supplier({
+    required this.name,
+    required this.address,
+    required this.paymentInfo,
+  });
+}
+
+class Customer {
+  final String name;
+  final String address;
+
+  const Customer({
+    required this.name,
+    required this.address,
   });
 }

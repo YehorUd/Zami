@@ -1,8 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pay/pay.dart';
 import 'package:zami/models/invoice.dart';
-import 'package:zami/models/customer.dart';
-import 'package:zami/models/supplier.dart';
 import 'package:zami/helper/pdf_api.dart';
 import 'dart:io';
 import 'package:zami/pages/my_invoices_page.dart';
@@ -167,13 +167,26 @@ class _CartPageState extends State<CartPage> {
           print('Błąd: Plik PDF nie został pomyślnie wygenerowany.');
         }
 
+        final String invoiceNumber = _generateInvoiceNumber();
+
         final Invoice invoice = Invoice(
-          supplier: Supplier(name: 'Twoja Firma', address: 'Adres firmy', paymentInfo: 'Informacje o płatności'),
+          supplier: Supplier(
+            name: 'Zami',
+            address: 'Aleksandra Ostrowskiego 22, 53-238 Wrocław',
+            paymentInfo: 'Informacje o płatności',
+          ),
           customer: Customer(name: 'Klient', address: 'Adres klienta'),
-          info: InvoiceInfo(date: DateTime.now(), dueDate: DateTime.now().add(Duration(days: 7)), description: 'Opis faktury', number: '12345'),
+          info: InvoiceInfo(
+            date: DateTime.now(),
+            dueDate: DateTime.now().add(Duration(days: 7)),
+            description: 'Opis faktury',
+            number: invoiceNumber,
+          ),
           items: _convertCartItemsToInvoiceItems(),
-          location: 'Miejsce',
-          totalAmount: calculateTotalPrice(),
+          location: 'Wrocław',
+          netTotalAmount: calculateNetTotal(),
+          vatTotalAmount: calculateVatTotal(),
+          grossTotalAmount: calculateGrossTotal(),
           paymentStatus: 'Zapłacona',
           paymentDueDate: DateTime.now().add(Duration(days: 7)),
           paymentMethod: 'Przy odbiorze',
@@ -190,7 +203,7 @@ class _CartPageState extends State<CartPage> {
 
         setState(() {
           _isLoading = false;
-          _isInvoiceGenerated = false; // Reset the flag
+          _isInvoiceGenerated = false; // Resetuj flagę
         });
       } else {
         // Użytkownik nie udzielił uprawnień
@@ -203,24 +216,18 @@ class _CartPageState extends State<CartPage> {
         });
       }
     } catch (e) {
-      print('Exception during payment processing: $e');
+      print('Błąd podczas przetwarzania płatności: $e');
       setState(() {
         _isLoading = false;
       });
     }
   }
 
-
-
-
-  void _handlePrzyOdbiorzePayment() {
-    debugPrint('Przy odbiorze payment selected');
-    _completePayment();
-  }
-
-  void _handleKartaPlatniczaPayment() {
-    debugPrint('Kartą płatniczą payment selected');
-    _completePayment();
+  String _generateInvoiceNumber() {
+    // Generuj unikalny numer faktury składający się z 6 cyfr
+    final Random random = Random();
+    final int invoiceNumber = random.nextInt(900000) + 100000;
+    return invoiceNumber.toString();
   }
 
   double calculateTotalPrice() {
@@ -235,30 +242,35 @@ class _CartPageState extends State<CartPage> {
   Future<File?> _generateInvoice() async {
     try {
       final supplier = Supplier(
-        name: 'Twoja Firma',
-        address: 'Adres firmy',
+        name: 'Zami',
+        address: 'Aleksandra Ostrowskiego 22, 53-238 Wrocław',
         paymentInfo: 'Informacje o płatności',
       );
       final customer = Customer(name: 'Klient', address: 'Adres klienta');
+
+      // Użyj timestampa (czasu) jako unikalnego numeru faktury
+      final String invoiceNumber = DateTime.now().millisecondsSinceEpoch.toString();
+
       final invoiceInfo = InvoiceInfo(
         date: DateTime.now(),
         dueDate: DateTime.now().add(Duration(days: 7)),
         description: 'Opis faktury',
-        number: '12345',
+        number: invoiceNumber,
       );
       final Invoice invoice = Invoice(
         supplier: supplier,
         customer: customer,
         info: invoiceInfo,
         items: _convertCartItemsToInvoiceItems(),
-        location: 'Miejsce',
-        totalAmount: calculateTotalPrice(),
+        location: 'Wrocław',
+        netTotalAmount: calculateNetTotal(),
+        vatTotalAmount: calculateVatTotal(),
+        grossTotalAmount: calculateGrossTotal(),
         paymentStatus: 'Zapłacona',
         paymentDueDate: DateTime.now().add(Duration(days: 7)),
         paymentMethod: 'Przy odbiorze',
         paymentType: 'Gotówka',
       );
-
 
       final pdfFile = await PdfApi.generate(invoice);
 
@@ -282,7 +294,21 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  // Dodane dla generowania faktury PDF
+  double calculateNetTotal() {
+    final netTotal = widget.cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+    return double.parse(netTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+  }
+
+  double calculateVatTotal() {
+    final vatTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 0.23));
+    return double.parse(vatTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+  }
+
+  double calculateGrossTotal() {
+    final grossTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 1.23));
+    return double.parse(grossTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+  }
+
   List<InvoiceItem> _convertCartItemsToInvoiceItems() {
     return widget.cartItems
         .map((cartItem) => InvoiceItem(
@@ -291,9 +317,13 @@ class _CartPageState extends State<CartPage> {
       quantity: cartItem.quantity,
       vat: 0.23, // VAT w przykładowy sposób
       unitPrice: cartItem.price,
+      netAmount: double.parse((cartItem.price * cartItem.quantity).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
+      vatAmount: double.parse(((cartItem.price * cartItem.quantity) * 0.23).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
+      grossAmount: double.parse(((cartItem.price * cartItem.quantity) * 1.23).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
     ))
         .toList();
   }
+
 
   @override
   Widget build(BuildContext context) {
