@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zami/models/product_model.dart';
 import 'package:zami/repository/product_repository.dart';
 import 'package:zami/pages/cart_page.dart';
+import 'package:zami/pages/product_detail_page.dart';
 
 class ProductsPage extends StatefulWidget {
   final ProductRepository productRepository;
@@ -214,6 +215,14 @@ class _ProductsPageState extends State<ProductsPage> {
                     final imageName = product.imageName;
 
                     return ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailPage(product: product),
+                          ),
+                        );
+                      },
                       leading: SizedBox(
                         width: 60.0,
                         height: 60.0,
