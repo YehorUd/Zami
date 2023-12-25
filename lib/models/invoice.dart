@@ -74,20 +74,32 @@ class Supplier {
   final String name;
   final String address;
   final String paymentInfo;
+  final String postalCode;
+  final String city;
+  final String nip;
 
   const Supplier({
     required this.name,
     required this.address,
     required this.paymentInfo,
+    required this.postalCode,
+    required this.city,
+    required this.nip,
   });
 }
 
 class Customer {
   final String name;
   final String address;
+  final String postalCode;
+  final String city;
+  final String nip;
 
   const Customer({
     required this.name,
     required this.address,
+    required this.postalCode,
+    required this.city,
+    required this.nip,
   });
 }

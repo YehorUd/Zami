@@ -46,35 +46,125 @@ class PdfApi {
             bold: ttfFontBold,
           ),
           build: (context) => [
-            pw.Paragraph(
-              text: 'FAKTURA NR: ${invoice.info.number}',
-              style: pw.TextStyle(
-                fontSize: 12,
-                fontWeight: pw.FontWeight.bold,
-              ),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.end,
+              children: [
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.end,
+                  children: [
+                    pw.Paragraph(
+                      text: 'FAKTURA NR: ${invoice.info.number}',
+                      style: pw.TextStyle(
+                        fontSize: 14,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.Paragraph(
+                      text:
+                      'Data wystawienia: ${Utils.formatDate(invoice.info.date)}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4),
+                    ),
+                    pw.Paragraph(
+                      text:
+                      'Termin płatności: ${Utils.formatDate(invoice.info.dueDate)}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            pw.Paragraph(
-              text: 'Miejscowość: ${invoice.location}',
-              style: pw.TextStyle(fontSize: 12),
+            pw.SizedBox(height: 40),
+
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                // Seller details
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Paragraph(
+                      text: 'Sprzedawca:',
+                      style: pw.TextStyle(
+                        fontSize: 12,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.Paragraph(
+                      text: 'Nazwa Firmy: ${invoice.supplier.name}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Adres: ${invoice.supplier.address}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Kod pocztowy: ${invoice.supplier.postalCode}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Miejscowość: ${invoice.supplier.city}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'NIP: ${invoice.supplier.nip}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                  ],
+                ),
+
+                // Spacer to push Buyer details to the right
+                pw.SizedBox(width: 100),
+
+                // Buyer details
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Paragraph(
+                      text: 'Odbiorca:',
+                      style: pw.TextStyle(
+                        fontSize: 12,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.Paragraph(
+                      text: 'Imie i Nazwisko: ${invoice.customer.name}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Adres: ${invoice.customer.address}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Kod pocztowy: ${invoice.customer.postalCode}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'Miejscowość: ${invoice.customer.city}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                    pw.Paragraph(
+                      text: 'NIP: ${invoice.customer.nip}',
+                      style: pw.TextStyle(fontSize: 12),
+                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                    ),
+                  ],
+                ),
+              ],
             ),
-            pw.Paragraph(
-              text: 'Data wystawienia: ${Utils.formatDate(invoice.info.date)}',
-              style: pw.TextStyle(fontSize: 12),
-            ),
-            pw.Paragraph(
-              text:
-              'Termin płatności: ${Utils.formatDate(invoice.info.dueDate)}',
-              style: pw.TextStyle(fontSize: 12),
-            ),
-            pw.Paragraph(
-              text: 'Sprzedawca: ${invoice.supplier.name}',
-              style: pw.TextStyle(fontSize: 12),
-            ),
-            pw.Paragraph(
-              text: 'Nabywca: ${invoice.customer.name}',
-              style: pw.TextStyle(fontSize: 12),
-            ),
-            pw.SizedBox(height: 10), // Add some space
+
+
+            pw.SizedBox(height: 20), // Add some space
 
             // Invoice items
             pw.Table.fromTextArray(
@@ -105,16 +195,42 @@ class PdfApi {
 
             pw.SizedBox(height: 10), // Add some space
 
+            // Summary table
+            pw.Table.fromTextArray(
+              headers: [
+                'Podsumowanie',
+                'Wartość netto',
+                'VAT %',
+                'Wartość VAT',
+                'Wartość brutto',
+              ],
+              data: [
+                [
+                  'Razem',
+                  '${Utils.formatPrice(invoice.netTotalAmount)}',
+                  '23%',
+                  '${Utils.formatPrice(invoice.vatTotalAmount)}',
+                  '${Utils.formatPrice(invoice.grossTotalAmount)}',
+                ],
+              ],
+              border: pw.TableBorder.all(),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              cellAlignment: pw.Alignment.centerLeft,
+            ),
+
+            pw.SizedBox(height: 10), // Add some space
+
+            // Total amount in words
             pw.Paragraph(
               text:
-              'Razem: ${Utils.formatPrice(invoice.grossTotalAmount)}',
+              'Słownie: ${Utils.amountInWords(invoice.grossTotalAmount)}',
               style: pw.TextStyle(
                 fontSize: 12,
                 fontWeight: pw.FontWeight.bold,
               ),
             ),
 
-            pw.SizedBox(height: 10), // Add some space
+            pw.SizedBox(height: 20), // Add some space
 
             // Payment details
             pw.Paragraph(
@@ -149,10 +265,56 @@ class PdfApi {
 
 class Utils {
   static String formatDate(DateTime date) {
-    return "${date.day}.${date.month}.${date.year}";
+    return "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}";
   }
 
   static String formatPrice(double price) {
     return "${price.toStringAsFixed(2)} zł";
   }
+
+  static String amountInWords(double amount) {
+    final wholePart = amount.floor();
+    final decimalPart = ((amount - wholePart) * 100).round();
+
+    final wholeWords = _convertToWords(wholePart);
+    final decimalWords = _convertToWords(decimalPart);
+
+    final wholeText = wholeWords.isNotEmpty ? '$wholeWords złotych' : '';
+    final decimalText =
+    decimalWords.isNotEmpty ? ' i $decimalWords groszy' : '';
+
+    return '$wholeText$decimalText';
+  }
+
+  static String _convertToWords(int number) {
+    final units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
+    final teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
+    final tens = ['', '', 'dwadzieścia', 'trzydzieści', 'czterdzieści', 'pięćdziesiąt', 'sześćdziesiąt', 'siedemdziesiąt', 'osiemdziesiąt', 'dziewięćdziesiąt'];
+    final hundreds = ['', 'sto', 'dwieście', 'trzysta', 'czterysta', 'pięćset', 'sześćset', 'siedemset', 'osiemset', 'dziewięćset'];
+
+    String convertBelowThousand(int num) {
+      if (num == 0) {
+        return '';
+      } else if (num < 10) {
+        return units[num];
+      } else if (num < 20) {
+        return teens[num - 10];
+      } else if (num < 100) {
+        final ten = num ~/ 10;
+        final unit = num % 10;
+        return '${tens[ten]} ${units[unit]}';
+      } else {
+        final hundred = num ~/ 100;
+        final remainder = num % 100;
+        return '${hundreds[hundred]} ${convertBelowThousand(remainder)}';
+      }
+    }
+
+    if (number == 0) {
+      return 'zero';
+    } else {
+      return convertBelowThousand(number);
+    }
+  }
+
 }

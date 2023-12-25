@@ -179,10 +179,13 @@ class _CartPageState extends State<CartPage> {
         final Invoice invoice = Invoice(
           supplier: Supplier(
             name: 'Zami',
-            address: 'Aleksandra Ostrowskiego 22, 53-238 Wrocław',
+            address: 'Aleksandra Ostrowskiego 22',
             paymentInfo: 'Informacje o płatności',
+            city: 'Wrocław',
+            postalCode: '53-238',
+            nip: '1234567890'
           ),
-          customer: Customer(name: 'Klient', address: 'Adres klienta'),
+          customer: Customer(name: 'Klient', address: 'Adres klienta', city: 'Wrocław', postalCode: '00-000', nip: 'nie podany'),
           info: InvoiceInfo(
             date: DateTime.now(),
             dueDate: DateTime.now().add(Duration(days: 7)),
@@ -268,11 +271,14 @@ class _CartPageState extends State<CartPage> {
   Future<File?> _generateInvoice({required String paymentMethod}) async {
     try {
       final supplier = Supplier(
-        name: 'Zami',
-        address: 'Aleksandra Ostrowskiego 22, 53-238 Wrocław',
-        paymentInfo: 'Informacje o płatności',
+          name: 'Zami',
+          address: 'Aleksandra Ostrowskiego 22',
+          paymentInfo: 'Informacje o płatności',
+          city: 'Wrocław',
+          postalCode: '53-238',
+          nip: '1234567890'
       );
-      final customer = Customer(name: 'Klient', address: 'Adres klienta');
+      final customer = Customer(name: 'Klient', address: 'Adres klienta', city: 'Wrocław', postalCode: '00-000', nip: 'nie podany');
 
       // Użyj timestampa (czasu) jako unikalnego numeru faktury
       final String invoiceNumber = DateTime.now().millisecondsSinceEpoch.toString();
