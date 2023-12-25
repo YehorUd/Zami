@@ -16,33 +16,65 @@ class TermsPage extends StatelessWidget {
               Text(
                 'Warunki korzystania',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
-                '1. Niniejszy regulamin określa zasady korzystania z usług dostępnych w aplikacji "Zami - Zamów mnie".',
+              SizedBox(height: 16),
+              TermsItem(
+                number: '1',
+                content: 'Niniejszy regulamin określa zasady korzystania z usług dostępnych w aplikacji "Zami - Zamów mnie".',
               ),
-              Text(
-                '2. Użytkownik jest zobowiązany do przestrzegania postanowień niniejszego regulaminu.',
+              TermsItem(
+                number: '2',
+                content: 'Użytkownik jest zobowiązany do przestrzegania postanowień niniejszego regulaminu.',
               ),
-              Text(
-                '3. Aplikacja "Zami - Zamów mnie" służy do składania zamówień na jedzenie fast food.',
+              TermsItem(
+                number: '3',
+                content: 'Aplikacja "Zami - Zamów mnie" służy do składania zamówień na jedzenie fast food.',
               ),
-              Text(
-                '4. Zabrania się przesyłania treści obraźliwych lub niezgodnych z obowiązującym prawem.',
+              TermsItem(
+                number: '4',
+                content: 'Zabrania się przesyłania treści obraźliwych lub niezgodnych z obowiązującym prawem.',
               ),
-              Text(
-                '5. Administracja zastrzega sobie prawo do zablokowania dostępu użytkownika w przypadku naruszenia regulaminu.',
+              TermsItem(
+                number: '5',
+                content: 'Administracja zastrzega sobie prawo do zablokowania dostępu użytkownika w przypadku naruszenia regulaminu.',
               ),
-              Text(
-                '6. Aplikacja jest projektem dyplomowym studenta Wrocławskiej Akademii Biznesu na kierunku informatyka.',
+              TermsItem(
+                number: '6',
+                content: 'Aplikacja jest projektem dyplomowym studenta Wrocławskiej Akademii Biznesu na kierunku informatyka.',
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class TermsItem extends StatelessWidget {
+  final String number;
+  final String content;
+
+  const TermsItem({
+    required this.number,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$number. $content',
+          style: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 8),
+      ],
     );
   }
 }

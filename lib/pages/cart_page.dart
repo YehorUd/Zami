@@ -7,6 +7,7 @@ import 'package:zami/helper/pdf_api.dart';
 import 'dart:io';
 import 'package:zami/pages/my_invoices_page.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:zami/pages/order_form_page.dart';
 
 class CartPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -19,7 +20,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   bool _isLoading = false;
-
+  OrderFormResult? orderFormResult;
   List<PaymentItem> get paymentItems {
     List<PaymentItem> items = [];
 
@@ -40,12 +41,12 @@ class _CartPageState extends State<CartPage> {
     return PaymentConfiguration.fromAsset('json/google_pay_config.json');
   }
 
-  void onGooglePayResult(dynamic paymentResult) {
+  void onGooglePayResult(dynamic paymentResult, OrderFormResult orderFormResult) {
     debugPrint('Payment Result: $paymentResult');
     debugPrint('Complete Payment Result: ${paymentResult.toString()}');
 
     if (paymentResult != null && paymentResult['error'] == null) {
-      _completePayment(paymentMethod: 'Google Pay');
+      _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Google Pay');
     } else if (paymentResult != null && paymentResult['status'] == 'CANCELED') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment canceled by user')),
@@ -81,73 +82,124 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  void _checkout() async {
-    setState(() {
-      _isLoading = true;
-    });
 
-    final config = await paymentConfiguration();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Wybierz formę płatności:'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GooglePayButton(
-                paymentConfiguration: config,
-                paymentItems: paymentItems,
-                type: GooglePayButtonType.pay,
-                margin: const EdgeInsets.only(top: 15.0),
-                onPaymentResult: onGooglePayResult,
-                loadingIndicator: const Center(
-                  child: CircularProgressIndicator(),
+  void _checkout() async {
+    // Navigate to the order form page
+    final orderFormResult = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OrderFormPage(),
+      ),
+    );
+
+    // Check if the user submitted the order form
+    if (orderFormResult != null && orderFormResult.customer != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final config = await paymentConfiguration();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Wybierz formę płatności:'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GooglePayButton(
+                  paymentConfiguration: config,
+                  paymentItems: paymentItems,
+                  type: GooglePayButtonType.pay,
+                  margin: const EdgeInsets.only(top: 15.0),
+                  onPaymentResult: (dynamic paymentResult) {
+                    debugPrint('Payment Result: $paymentResult');
+                    debugPrint('Complete Payment Result: ${paymentResult.toString()}');
+
+                    if (paymentResult != null && paymentResult['error'] == null) {
+                      _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Google Pay');
+                    } else if (paymentResult != null && paymentResult['status'] == 'CANCELED') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Payment canceled by user')),
+                      );
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    } else {
+                      debugPrint('Google Pay Error: ${paymentResult['status']}');
+
+                      if (paymentResult != null && paymentResult['error'] != null) {
+                        final dynamic errorInfo = paymentResult['error'];
+                        debugPrint('Error Code: ${errorInfo['code']}');
+                        debugPrint('Error Message: ${errorInfo['message']}');
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Payment failed. Please try again.')),
+                      );
+
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+                  },
+                  loadingIndicator: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                SizedBox(height: 15.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: 'Przy odbiorze');
+                    _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Gotówka');
+                  },
+                  child: Text('Przy odbiorze'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: 'Kartą');
+                    _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Karta');
+                  },
+                  child: Text('Kartą Płatniczą'),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Anuluj'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
                 ),
               ),
-              SizedBox(height: 15.0),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await _generateInvoice(paymentMethod: 'Przy odbiorze');
-                  _completePayment(paymentMethod: 'Gotówka');
-                },
-                child: Text('Przy odbiorze'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await _generateInvoice(paymentMethod: 'Kartą');
-                  _completePayment(paymentMethod: 'Karta');
-                },
-                child: Text('Kartą Płatniczą'),
-              ),
             ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Anuluj'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-            ),
-          ],
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
+
+
+
+
+  bool _orderFormSubmitted = false;
+
+// Modify the _completeOrder method to set _orderFormSubmitted to true
+  void _completeOrder() {
+    // Your existing logic to complete the order
+
+    // Set _orderFormSubmitted to true when the order is completed
+    _orderFormSubmitted = true;
+  }
+
+
 
   bool _isInvoiceGenerated = false;
 
-  void _generateReceipt() async {
-    if (!_isInvoiceGenerated) {
-      await _generateInvoice(paymentMethod: 'Przy odbiorze'); // Dostarcz właściwą wartość dla paymentMethod
-      _isInvoiceGenerated = true;
-    }
-  }
 
 
   void printReceipt() {
@@ -158,9 +210,9 @@ class _CartPageState extends State<CartPage> {
     print('Total: ${calculateTotalPrice()} zł');
   }
 
-  void _completePayment({required String paymentMethod}) async {
+  void _completePayment({required OrderFormResult orderFormResult, required String paymentMethod}) async {
     try {
-      final pdfFile = await _generateInvoice(paymentMethod: paymentMethod);
+      final pdfFile = await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: paymentMethod);
 
       // Sprawdź uprawnienia przed otwarciem faktury
       final status = await Permission.location.request();
@@ -183,9 +235,9 @@ class _CartPageState extends State<CartPage> {
             paymentInfo: 'Informacje o płatności',
             city: 'Wrocław',
             postalCode: '53-238',
-            nip: '1234567890'
+            nip: '1234567890',
           ),
-          customer: Customer(name: 'Klient', address: 'Adres klienta', city: 'Wrocław', postalCode: '00-000', nip: 'nie podany'),
+          customer: orderFormResult.customer,
           info: InvoiceInfo(
             date: DateTime.now(),
             dueDate: DateTime.now().add(Duration(days: 7)),
@@ -199,8 +251,8 @@ class _CartPageState extends State<CartPage> {
           grossTotalAmount: calculateGrossTotal(),
           paymentStatus: 'Zapłacona',
           paymentDueDate: DateTime.now().add(Duration(days: 7)),
-          paymentMethod: displayedPaymentMethod, // Ustawienie formy płatności
-          paymentType: displayedPaymentType, // Ustawienie typu płatności
+          paymentMethod: displayedPaymentMethod,
+          paymentType: displayedPaymentType,
         );
 
         // Przekieruj do MyInvoicesPage po udanej płatności
@@ -232,6 +284,8 @@ class _CartPageState extends State<CartPage> {
       });
     }
   }
+
+
 
   String _getDisplayPaymentMethod(String paymentMethod) {
     // Jeśli płatność jest dokonywana za pomocą Google Pay, zwróć "Karta"
@@ -268,17 +322,18 @@ class _CartPageState extends State<CartPage> {
   }
 
   // New function to generate the PDF invoice
-  Future<File?> _generateInvoice({required String paymentMethod}) async {
+  Future<File?> _generateInvoice({required OrderFormResult orderFormResult, required String paymentMethod}) async {
     try {
       final supplier = Supplier(
-          name: 'Zami',
-          address: 'Aleksandra Ostrowskiego 22',
-          paymentInfo: 'Informacje o płatności',
-          city: 'Wrocław',
-          postalCode: '53-238',
-          nip: '1234567890'
+        name: 'Zami',
+        address: 'Aleksandra Ostrowskiego 22',
+        paymentInfo: 'Informacje o płatności',
+        city: 'Wrocław',
+        postalCode: '53-238',
+        nip: '1234567890',
       );
-      final customer = Customer(name: 'Klient', address: 'Adres klienta', city: 'Wrocław', postalCode: '00-000', nip: 'nie podany');
+
+      final customer = orderFormResult.customer;
 
       // Użyj timestampa (czasu) jako unikalnego numeru faktury
       final String invoiceNumber = DateTime.now().millisecondsSinceEpoch.toString();
@@ -289,6 +344,7 @@ class _CartPageState extends State<CartPage> {
         description: 'Opis faktury',
         number: invoiceNumber,
       );
+
       final Invoice invoice = Invoice(
         supplier: supplier,
         customer: customer,
@@ -300,22 +356,14 @@ class _CartPageState extends State<CartPage> {
         grossTotalAmount: calculateGrossTotal(),
         paymentStatus: 'Zapłacona',
         paymentDueDate: DateTime.now().add(Duration(days: 7)),
-        paymentMethod: paymentMethod, // Ustawienie formy płatności
-        paymentType: _getDisplayPaymentType(paymentMethod), // Ustawienie typu płatności
+        paymentMethod: paymentMethod,
+        paymentType: _getDisplayPaymentType(paymentMethod),
       );
 
       final pdfFile = await PdfApi.generate(invoice);
 
       if (pdfFile != null) {
-        // Przekazanie faktury do MyInvoicesPage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyInvoicesPage(newInvoice: invoice),
-          ),
-        );
-
-        return pdfFile; // Zwracaj plik PDF, jeśli generacja zakończy się sukcesem
+        return pdfFile;
       } else {
         print('Błąd: Generowanie pliku PDF zwróciło null.');
         return null;
@@ -325,6 +373,8 @@ class _CartPageState extends State<CartPage> {
       return null;
     }
   }
+
+
 
   double calculateNetTotal() {
     final netTotal = widget.cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));

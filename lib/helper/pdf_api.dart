@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:zami/models/invoice.dart';
+import 'package:flutter/services.dart';
 
 class PdfApi {
   static Future<File> saveDocument({
@@ -34,10 +36,13 @@ class PdfApi {
       await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
       final fontDataBold =
       await rootBundle.load("assets/fonts/OpenSans-Bold.ttf");
+      final fontDataLightItalic =
+      await rootBundle.load("assets/fonts/OpenSans-LightItalic.ttf");
 
-      final ttfFontRegular =
-      pw.Font.ttf(fontDataRegular.buffer.asByteData());
+      final ttfFontRegular = pw.Font.ttf(fontDataRegular.buffer.asByteData());
       final ttfFontBold = pw.Font.ttf(fontDataBold.buffer.asByteData());
+      final ttfFontLightItalic = pw.Font.ttf(fontDataLightItalic.buffer.asByteData());
+
 
       pdf.addPage(
         pw.MultiPage(
@@ -251,6 +256,18 @@ class PdfApi {
               text: 'Metoda płatności: ${invoice.paymentType}',
               style: pw.TextStyle(fontSize: 12),
             ),
+            pw.SizedBox(height: 20), // Add some space
+
+            // Additional text at the bottom with OpenSans-LightItalic.ttf
+            pw.Paragraph(
+              text: 'Dokument wystawiony automatycznie nie wymagający podpisu.',
+              style: pw.TextStyle(
+                fontSize: 10,
+                fontStyle: pw.FontStyle.italic,
+                font: ttfFontLightItalic,
+                color: PdfColors.grey900,
+              ),
+            ),
           ],
         ),
       );
@@ -316,5 +333,4 @@ class Utils {
       return convertBelowThousand(number);
     }
   }
-
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../RODO/privacy_policy_page.dart';
+import '../RODO/terms_page.dart';
 import 'security_utils.dart';
 import 'package:bcrypt/bcrypt.dart';
-import 'package:zami/RODO/terms_page.dart';
-import 'package:zami/RODO/privacy_policy_page.dart';
-import 'package:g_recaptcha_v3/g_recaptcha_v3.dart';
+import 'package:recaptcha_enterprise_flutter/recaptcha_enterprise.dart';
+import 'package:recaptcha_enterprise_flutter/recaptcha_action.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -23,33 +24,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _isPasswordVisible1 = false;
   bool _isPasswordVisible2 = false;
   bool _isAgreeChecked = false;
+  bool _isRecaptchaChecked = false;
 
+  final _recaptchaEnterprisePlugin = RecaptchaEnterprise();
+
+  @override
+  void initState() {
+    super.initState();
+    _initRecaptcha();
+  }
+
+  void _initRecaptcha() async {
+    String siteKey = '6Lc58DspAAAAAADqgbFlG4qFz76s236CUPxSB1r_'; // Zastąp odpowiednim kluczem reCAPTCHA tutaj
+
+    try {
+      await RecaptchaEnterprise.initClient(siteKey, timeout: 10000);
+    } catch (e) {
+      print('Caught exception on init: $e');
+    }
+  }
 
   void _register() async {
     try {
-      if (!_isAgreeChecked) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Błąd rejestracji'),
-              content: Text('Musisz zaakceptować warunki i politykę prywatności.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text(
-                    'OK',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+      if (!_isAgreeChecked || !_isRecaptchaChecked) {
+        _showErrorDialog(
+            'Błąd rejestracji',
+            'Musisz zaakceptować warunki, politykę prywatności i potwierdzić, że nie jesteś robotem.');
         return;
       }
 
@@ -59,60 +59,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
       if (_emailController.text.isEmpty ||
           _passwordController.text.isEmpty ||
           _confirmPasswordController.text.isEmpty) {
-        // Pola e-maila, hasła i potwierdzenia hasła nie mogą być puste
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Błąd rejestracji'),
-              content: Text('Wprowadź wszystkie wymagane dane.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text(
-                    'OK',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog(
+            'Błąd rejestracji', 'Wprowadź wszystkie wymagane dane.');
         return;
       }
 
       if (_passwordController.text != _confirmPasswordController.text) {
-        // Hasła nie są identyczne
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Błąd rejestracji'),
-              content: Text('Hasła nie są identyczne. Sprawdź wprowadzone dane i spróbuj ponownie.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text(
-                    'OK',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog('Błąd rejestracji',
+            'Hasła nie są identyczne. Sprawdź wprowadzone dane i spróbuj ponownie.');
         return;
       }
 
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      bool recaptchaResult = await _executeRecaptcha();
+
+      if (!recaptchaResult) {
+        return;
+      }
+
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: hashedPassword,
       );
@@ -127,46 +92,61 @@ class _RegistrationPageState extends State<RegistrationPage> {
         Navigator.pop(context);
       }
     } catch (e) {
-      // Wypisz błąd Firebase w konsoli
       print('Firebase Error: $e');
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Błąd rejestracji'),
-            content: Text('Wystąpił błąd podczas rejestracji. Sprawdź swoje dane i spróbuj ponownie.'),
-            actions: <Widget>[
-              TextButton(
-                child: Text(
-                  'OK',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog('Błąd rejestracji',
+          'Wystąpił błąd podczas rejestracji. Sprawdź swoje dane i spróbuj ponownie.');
     }
   }
-  void _navigateToTermsPage() {
-    // Tutaj nawigacja do strony z warunkami
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TermsPage()),
-    );
+
+  Future<bool> _executeRecaptcha() async {
+    try {
+      String result = await RecaptchaEnterprise.execute(
+          RecaptchaAction.LOGIN(), timeout: 10000);
+
+      if (result.isNotEmpty) {
+        setState(() {
+          _isRecaptchaChecked = true;
+        });
+        return true;
+      } else {
+        _showRecaptchaErrorDialog();
+        return false;
+      }
+    } catch (e) {
+      print('Caught exception on execute: $e');
+      _showRecaptchaErrorDialog();
+      return false;
+    }
   }
 
-  void _navigateToPrivacyPolicyPage() {
-    // Tutaj nawigacja do strony z polityką prywatności
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
+  void _showRecaptchaErrorDialog() {
+    _showErrorDialog('Błąd weryfikacji reCAPTCHA',
+        'Weryfikacja reCAPTCHA nie powiodła się. Spróbuj ponownie.');
+  }
+
+  void _showErrorDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -198,7 +178,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: InputDecoration(
                   labelText: 'Hasło',
                   suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible1 ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(_isPasswordVisible1 ? Icons.visibility : Icons
+                        .visibility_off),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible1 = !_isPasswordVisible1;
@@ -214,7 +195,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: InputDecoration(
                   labelText: 'Potwierdź hasło',
                   suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible2 ? Icons.visibility : Icons.visibility_off),
+                    icon: Icon(_isPasswordVisible2 ? Icons.visibility : Icons
+                        .visibility_off),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible2 = !_isPasswordVisible2;
@@ -261,6 +243,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ],
                 ),
               ),
+              ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Checkbox(
+                  value: _isRecaptchaChecked,
+                  onChanged: (bool? value) {
+                    if (_isAgreeChecked) {
+                      setState(() {
+                        _isRecaptchaChecked = value!;
+                      });
+                    }
+                  },
+                ),
+                title: Text('Nie jestem robotem'),
+              ),
               SizedBox(height: 24.0),
               ElevatedButton(
                 onPressed: _register,
@@ -270,6 +266,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _navigateToTermsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TermsPage()),
+    );
+  }
+
+  void _navigateToPrivacyPolicyPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
     );
   }
 }

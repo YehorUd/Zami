@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  captcha_solver:
+    dependency: "direct main"
+    description:
+      name: captcha_solver
+      sha256: "45da50785944e27c86db93c5bf00af189b9480eca0727f72a20f9a355c00d3ee"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   characters:
     dependency: transitive
     description:
@@ -341,14 +349,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.2.0"
-  g_recaptcha_v3:
-    dependency: "direct main"
-    description:
-      name: g_recaptcha_v3
-      sha256: ee754d0a5621646e200b2d5d9c918d64725fb53d6a1b65cbd6f294c08e0fe529
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   glob:
     dependency: transitive
     description:
@@ -725,6 +725,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  recaptcha_enterprise_flutter:
+    dependency: "direct main"
+    description:
+      name: recaptcha_enterprise_flutter
+      sha256: "1c10ae00abfee5c21c89c3e52c6a9b741ef972b581cd4c687ea14f6ac7bd43f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "18.4.0"
   sky_engine:
     dependency: transitive
     description: flutter

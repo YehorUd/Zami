@@ -16,33 +16,65 @@ class PrivacyPolicyPage extends StatelessWidget {
               Text(
                 'Polityka prywatności',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
-                '1. Administratorem danych osobowych jest Wrocławska Akademia Biznesu.',
+              SizedBox(height: 16),
+              PrivacyPolicyItem(
+                number: '1',
+                content: 'Administratorem danych osobowych jest Wrocławska Akademia Biznesu.',
               ),
-              Text(
-                '2. Dane osobowe są przetwarzane w celu obsługi aplikacji "Zami - Zamów mnie" - prostej aplikacji do zamawiania jedzenia fast food.',
+              PrivacyPolicyItem(
+                number: '2',
+                content: 'Dane osobowe są przetwarzane w celu obsługi aplikacji "Zami - Zamów mnie" - prostej aplikacji do zamawiania jedzenia fast food.',
               ),
-              Text(
-                '3. Dane nie są udostępniane osobom trzecim i są przechowywane zgodnie z obowiązującymi przepisami prawa.',
+              PrivacyPolicyItem(
+                number: '3',
+                content: 'Dane nie są udostępniane osobom trzecim i są przechowywane zgodnie z obowiązującymi przepisami prawa.',
               ),
-              Text(
-                '4. Użytkownik ma prawo żądania dostępu, poprawiania, usuwania lub ograniczenia przetwarzania swoich danych osobowych.',
+              PrivacyPolicyItem(
+                number: '4',
+                content: 'Użytkownik ma prawo żądania dostępu, poprawiania, usuwania lub ograniczenia przetwarzania swoich danych osobowych.',
               ),
-              Text(
-                '5. Aplikacja wykorzystuje pliki cookies w celu poprawy jakości usług.',
+              PrivacyPolicyItem(
+                number: '5',
+                content: 'Aplikacja wykorzystuje pliki cookies w celu poprawy jakości usług.',
               ),
-              Text(
-                '6. Administracja zastrzega sobie prawo do zmiany polityki prywatności w dowolnym czasie.',
+              PrivacyPolicyItem(
+                number: '6',
+                content: 'Administracja zastrzega sobie prawo do zmiany polityki prywatności w dowolnym czasie.',
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class PrivacyPolicyItem extends StatelessWidget {
+  final String number;
+  final String content;
+
+  const PrivacyPolicyItem({
+    required this.number,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$number. $content',
+          style: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 8),
+      ],
     );
   }
 }
