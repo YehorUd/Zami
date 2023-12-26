@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zami/models/invoice.dart';
-import 'package:zami/pages/cart_page.dart'; // Dodaj import
 
 class OrderFormPage extends StatefulWidget {
   @override
@@ -14,99 +13,120 @@ class _OrderFormPageState extends State<OrderFormPage> {
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _nipController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Formularz zamówienia'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Wymagane informacje dla płatności:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Imię i nazwisko'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'To pole jest wymagane';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _addressController,
-              decoration: InputDecoration(labelText: 'Adres'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'To pole jest wymagane';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _postalCodeController,
-              decoration: InputDecoration(
-                labelText: 'Kod pocztowy',
-                hintText: '00-000',
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 5,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'To pole jest wymagane';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _nipController,
-              decoration: InputDecoration(labelText: 'NIP (opcjonalnie)'),
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Sprawdź poprawność pól formularza
-                if (_validateForm()) {
-                  // Utwórz obiekt Customer z wprowadzonymi informacjami
-                  Customer customer = Customer(
-                    name: _nameController.text,
-                    address: _addressController.text,
-                    city: 'Wrocław',
-                    postalCode: _postalCodeController.text,
-                    nip: _nipController.text,
-                  );
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Wymagane informacje dla płatności:',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Imię i nazwisko',
+                    hintText: 'Imię Nazwisko',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'To pole jest wymagane';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    labelText: 'Adres',
+                    hintText: 'Przykładowa 10/1A',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'To pole jest wymagane';
+                    }
+                    return null;
+                  },
+                ),
 
-                  // Prześlij obiekt customer do poprzedniego ekranu
-                  Navigator.pop(context, OrderFormResult(customer: customer));
-                }
-              },
-              child: Text('Dalej'),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _postalCodeController,
+                  decoration: InputDecoration(
+                    labelText: 'Kod pocztowy',
+                    hintText: '00-000',
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 6, // Zwiększ maksymalną długość do 6 (np. 00-000)
+                  onChanged: (value) {
+                    if (value.length == 2) {
+                      _postalCodeController.text = '$value-';
+                      _postalCodeController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _postalCodeController.text.length),
+                      );
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'To pole jest wymagane';
+                    } else if (!RegExp(r'^\d{2}-\d{3}$').hasMatch(value)) {
+                      return 'Podaj poprawny kod pocztowy w formacie XX-XXX';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _nipController,
+                  decoration: InputDecoration(
+                    labelText: 'NIP (opcjonalnie)',
+                    hintText: '0123456789',
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 10,
+                ),
+                SizedBox(height: 16.0),
+                Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Validate the form
+                      if (_formKey.currentState?.validate() ?? false) {
+                        // Create a Customer object with the entered information
+                        Customer customer = Customer(
+                          name: _nameController.text,
+                          address: _addressController.text,
+                          city: 'Wrocław',
+                          postalCode: _postalCodeController.text,
+                          nip: _nipController.text.isEmpty ? '—' : _nipController.text,
+                        );
+
+                        // Send the customer object to the previous screen
+                        Navigator.pop(context, OrderFormResult(customer: customer));
+                      }
+                    },
+                    child: Text('Dalej'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
-  }
-
-  bool _validateForm() {
-    // Dodaj logikę walidacji
-    // Na przykład, możesz sprawdzić, czy wymagane pola nie są puste
-    return _nameController.text.isNotEmpty &&
-        _addressController.text.isNotEmpty &&
-        _cityController.text.isNotEmpty &&
-        _postalCodeController.text.isNotEmpty;
   }
 }
 

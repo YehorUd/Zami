@@ -147,6 +147,31 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
+  void _openProductDetailPage(Product product) async {
+    final updatedCartItems = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailPage(
+          product: product,
+          cartItems: cartItems,
+          onCartUpdated: (updatedCartItems) {
+            setState(() {
+              cartItems = updatedCartItems;
+            });
+          },
+        ),
+      ),
+    );
+
+    if (updatedCartItems != null && updatedCartItems is List<CartItem>) {
+      setState(() {
+        cartItems = updatedCartItems;
+      });
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     int cartItemsCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
@@ -216,13 +241,9 @@ class _ProductsPageState extends State<ProductsPage> {
 
                     return ListTile(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProductDetailPage(product: product),
-                          ),
-                        );
+                        _openProductDetailPage(product);
                       },
+
                       leading: SizedBox(
                         width: 60.0,
                         height: 60.0,

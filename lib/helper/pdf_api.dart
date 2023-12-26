@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:zami/models/invoice.dart';
-import 'package:flutter/services.dart';
 
 class PdfApi {
   static Future<File> saveDocument({
@@ -43,13 +42,26 @@ class PdfApi {
       final ttfFontBold = pw.Font.ttf(fontDataBold.buffer.asByteData());
       final ttfFontLightItalic = pw.Font.ttf(fontDataLightItalic.buffer.asByteData());
 
-
       pdf.addPage(
         pw.MultiPage(
           theme: pw.ThemeData.withFont(
             base: ttfFontRegular,
             bold: ttfFontBold,
           ),
+          // Dodaj informację o ilości stron na dole faktury
+          footer: (pw.Context context) {
+            return pw.Container(
+              alignment: pw.Alignment.center,
+              margin: pw.EdgeInsets.only(top: 10),
+              child: pw.Text(
+                'Strona ${context.pageNumber}/${context.pagesCount}',
+                style: pw.TextStyle(
+                  fontSize: 8,
+                  color: PdfColors.black,
+                ),
+              ),
+            );
+          },
           build: (context) => [
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.end,

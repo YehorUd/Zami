@@ -81,6 +81,99 @@ class _CartPageState extends State<CartPage> {
       }
     });
   }
+  TextEditingController _cardNumberController = TextEditingController();
+  TextEditingController _expiryDateController = TextEditingController();
+  TextEditingController _cvcController = TextEditingController();
+
+  void _showCardDetailsDialog(OrderFormResult orderFormResult) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Podaj dane karty'),
+          content: Column(
+            children: [
+              TextFormField(
+                controller: _cardNumberController,
+                decoration: InputDecoration(labelText: 'Numer karty (16 cyfr)'),
+                keyboardType: TextInputType.number,
+                maxLength: 16,
+                validator: (value) {
+                  if (value == null || value.isEmpty || value.length != 16) {
+                    return 'Podaj poprawny numer karty';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _expiryDateController,
+                      decoration: InputDecoration(labelText: 'Data ważności (YYYY)'),
+                      keyboardType: TextInputType.number,
+                      maxLength: 4,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || !RegExp(r'^\d{4}$').hasMatch(value)) {
+                          return 'Podaj poprawny rok ważności (YYYY)';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cvcController,
+                      decoration: InputDecoration(labelText: 'Kod CVC (3 cyfry)'),
+                      keyboardType: TextInputType.number,
+                      maxLength: 3,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value.length != 3) {
+                          return 'Podaj poprawny kod CVC';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Anuluj'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_validateCardDetails()) {
+                  await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: 'Kartą Płatniczą');
+                  _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Karta');
+                }
+              },
+              child: Text('Zatwierdź'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+
+  bool _validateCardDetails() {
+    return _cardNumberController.text.isNotEmpty &&
+        _cardNumberController.text.length == 16 &&
+        _expiryDateController.text.isNotEmpty &&
+        RegExp(r'^\d{4}$').hasMatch(_expiryDateController.text) &&
+        _cvcController.text.isNotEmpty &&
+        _cvcController.text.length == 3;
+  }
 
 
   void _checkout() async {
@@ -159,8 +252,7 @@ class _CartPageState extends State<CartPage> {
                 ElevatedButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
-                    await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: 'Kartą');
-                    _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Karta');
+                    _showCardDetailsDialog(orderFormResult);
                   },
                   child: Text('Kartą Płatniczą'),
                 ),
@@ -182,23 +274,6 @@ class _CartPageState extends State<CartPage> {
       );
     }
   }
-
-
-
-
-  bool _orderFormSubmitted = false;
-
-// Modify the _completeOrder method to set _orderFormSubmitted to true
-  void _completeOrder() {
-    // Your existing logic to complete the order
-
-    // Set _orderFormSubmitted to true when the order is completed
-    _orderFormSubmitted = true;
-  }
-
-
-
-  bool _isInvoiceGenerated = false;
 
 
 
@@ -228,6 +303,8 @@ class _CartPageState extends State<CartPage> {
         final String displayedPaymentMethod = _getDisplayPaymentMethod(paymentMethod);
         final String displayedPaymentType = _getDisplayPaymentType(paymentMethod);
 
+        final String paymentStatus = displayedPaymentType == 'Przy odbiorze' ? 'Wystawiona' : 'Opłacona';
+
         final Invoice invoice = Invoice(
           supplier: Supplier(
             name: 'Zami',
@@ -249,7 +326,7 @@ class _CartPageState extends State<CartPage> {
           netTotalAmount: calculateNetTotal(),
           vatTotalAmount: calculateVatTotal(),
           grossTotalAmount: calculateGrossTotal(),
-          paymentStatus: 'Zapłacona',
+          paymentStatus: paymentStatus,
           paymentDueDate: DateTime.now().add(Duration(days: 7)),
           paymentMethod: displayedPaymentMethod,
           paymentType: displayedPaymentType,
@@ -265,7 +342,6 @@ class _CartPageState extends State<CartPage> {
 
         setState(() {
           _isLoading = false;
-          _isInvoiceGenerated = false; // Resetuj flagę
         });
       } else {
         // Użytkownik nie udzielił uprawnień
@@ -284,6 +360,7 @@ class _CartPageState extends State<CartPage> {
       });
     }
   }
+
 
 
 
@@ -345,16 +422,25 @@ class _CartPageState extends State<CartPage> {
         number: invoiceNumber,
       );
 
+      // Jeśli NIP jest pusty, ustaw go na "-"
+      final String nipValue = customer.nip.isEmpty ? '—' : customer.nip;
+
       final Invoice invoice = Invoice(
         supplier: supplier,
-        customer: customer,
+        customer: Customer(
+          name: customer.name,
+          address: customer.address,
+          city: customer.city,
+          postalCode: customer.postalCode,
+          nip: nipValue,
+        ),
         info: invoiceInfo,
         items: _convertCartItemsToInvoiceItems(),
         location: 'Wrocław',
         netTotalAmount: calculateNetTotal(),
         vatTotalAmount: calculateVatTotal(),
         grossTotalAmount: calculateGrossTotal(),
-        paymentStatus: 'Zapłacona',
+        paymentStatus: paymentMethod == 'Przy odbiorze' ? 'Wystawiona' : 'Opłacona',
         paymentDueDate: DateTime.now().add(Duration(days: 7)),
         paymentMethod: paymentMethod,
         paymentType: _getDisplayPaymentType(paymentMethod),
@@ -373,6 +459,8 @@ class _CartPageState extends State<CartPage> {
       return null;
     }
   }
+
+
 
 
 
