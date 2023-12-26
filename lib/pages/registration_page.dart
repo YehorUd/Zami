@@ -35,7 +35,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void _initRecaptcha() async {
-    String siteKey = '6Lc58DspAAAAAADqgbFlG4qFz76s236CUPxSB1r_'; // Zastąp odpowiednim kluczem reCAPTCHA tutaj
+    String siteKey = '6Lc58DspAAAAAADqgbFlG4qFz76s236CUPxSB1r_';
 
     try {
       await RecaptchaEnterprise.initClient(siteKey, timeout: 10000);

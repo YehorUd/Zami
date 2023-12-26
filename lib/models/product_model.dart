@@ -6,7 +6,7 @@ class Product {
   final double price;
   final String category;
   final String imageName;
-  final String description; // Add this line
+  final String description;
 
   Product({
     required this.id,
@@ -14,7 +14,7 @@ class Product {
     required this.price,
     required this.category,
     required this.imageName,
-    required this.description, // Add this line
+    required this.description,
   });
 
   factory Product.fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -25,7 +25,7 @@ class Product {
       price: (data['price'] ?? 0).toDouble(),
       category: data['category'] ?? '',
       imageName: data['imageName'] ?? '',
-      description: data['description'] ?? '', // Add this line
+      description: data['description'] ?? '',
     );
   }
 
@@ -35,7 +35,7 @@ class Product {
     double? price,
     String? category,
     String? imageName,
-    String? description, // Add this line
+    String? description,
   }) {
     return Product(
       id: id ?? this.id,
@@ -43,7 +43,7 @@ class Product {
       price: price ?? this.price,
       category: category ?? this.category,
       imageName: imageName ?? this.imageName,
-      description: description ?? this.description, // Add this line
+      description: description ?? this.description,
     );
   }
 }

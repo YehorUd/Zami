@@ -208,7 +208,7 @@ class _ProductsPageState extends State<ProductsPage> {
       ),
       body: Center(
         child: Container(
-          width: 400, // Dostosuj szerokość do swoich potrzeb
+          width: 400,
           child: Column(
             children: [
               Padding(

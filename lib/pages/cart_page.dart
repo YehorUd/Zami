@@ -163,9 +163,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-
-
-
   bool _validateCardDetails() {
     return _cardNumberController.text.isNotEmpty &&
         _cardNumberController.text.length == 16 &&
@@ -174,7 +171,6 @@ class _CartPageState extends State<CartPage> {
         _cvcController.text.isNotEmpty &&
         _cvcController.text.length == 3;
   }
-
 
   void _checkout() async {
     // Navigate to the order form page
@@ -275,8 +271,6 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-
-
   void printReceipt() {
     print('Receipt:');
     for (var cartItem in widget.cartItems) {
@@ -289,7 +283,6 @@ class _CartPageState extends State<CartPage> {
     try {
       final pdfFile = await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: paymentMethod);
 
-      // Sprawdź uprawnienia przed otwarciem faktury
       final status = await Permission.location.request();
       if (status.isGranted) {
         if (pdfFile != null) {
@@ -332,7 +325,6 @@ class _CartPageState extends State<CartPage> {
           paymentType: displayedPaymentType,
         );
 
-        // Przekieruj do MyInvoicesPage po udanej płatności
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -344,7 +336,6 @@ class _CartPageState extends State<CartPage> {
           _isLoading = false;
         });
       } else {
-        // Użytkownik nie udzielił uprawnień
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Aby otworzyć fakturę, udziel uprawnień lokalizacyjnych.')),
         );
@@ -361,16 +352,11 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-
-
-
   String _getDisplayPaymentMethod(String paymentMethod) {
-    // Jeśli płatność jest dokonywana za pomocą Google Pay, zwróć "Karta"
     return paymentMethod == 'Google Pay' ? 'Karta' : paymentMethod;
   }
 
   String _getDisplayPaymentType(String paymentMethod) {
-    // Ustawienie odpowiedniego typu płatności na podstawie formy płatności
     switch (paymentMethod) {
       case 'Google Pay':
         return 'Google Pay';
@@ -384,7 +370,6 @@ class _CartPageState extends State<CartPage> {
   }
 
   String _generateInvoiceNumber() {
-    // Generuj unikalny numer faktury składający się z 6 cyfr
     final Random random = Random();
     final int invoiceNumber = random.nextInt(900000) + 100000;
     return invoiceNumber.toString();
@@ -412,7 +397,6 @@ class _CartPageState extends State<CartPage> {
 
       final customer = orderFormResult.customer;
 
-      // Użyj timestampa (czasu) jako unikalnego numeru faktury
       final String invoiceNumber = DateTime.now().millisecondsSinceEpoch.toString();
 
       final invoiceInfo = InvoiceInfo(
@@ -422,7 +406,6 @@ class _CartPageState extends State<CartPage> {
         number: invoiceNumber,
       );
 
-      // Jeśli NIP jest pusty, ustaw go na "-"
       final String nipValue = customer.nip.isEmpty ? '—' : customer.nip;
 
       final Invoice invoice = Invoice(
@@ -460,23 +443,19 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-
-
-
-
   double calculateNetTotal() {
     final netTotal = widget.cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-    return double.parse(netTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+    return double.parse(netTotal.toStringAsFixed(2));
   }
 
   double calculateVatTotal() {
     final vatTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 0.23));
-    return double.parse(vatTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+    return double.parse(vatTotal.toStringAsFixed(2));
   }
 
   double calculateGrossTotal() {
     final grossTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 1.23));
-    return double.parse(grossTotal.toStringAsFixed(2)); // Zaokrąglanie do dwóch miejsc po przecinku
+    return double.parse(grossTotal.toStringAsFixed(2));
   }
 
   List<InvoiceItem> _convertCartItemsToInvoiceItems() {
@@ -485,15 +464,14 @@ class _CartPageState extends State<CartPage> {
       description: cartItem.productName,
       date: DateTime.now(),
       quantity: cartItem.quantity,
-      vat: 0.23, // VAT w przykładowy sposób
+      vat: 0.23,
       unitPrice: cartItem.price,
-      netAmount: double.parse((cartItem.price * cartItem.quantity).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
-      vatAmount: double.parse(((cartItem.price * cartItem.quantity) * 0.23).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
-      grossAmount: double.parse(((cartItem.price * cartItem.quantity) * 1.23).toStringAsFixed(2)), // Zaokrąglanie do dwóch miejsc po przecinku
+      netAmount: double.parse((cartItem.price * cartItem.quantity).toStringAsFixed(2)),
+      vatAmount: double.parse(((cartItem.price * cartItem.quantity) * 0.23).toStringAsFixed(2)),
+      grossAmount: double.parse(((cartItem.price * cartItem.quantity) * 1.23).toStringAsFixed(2)),
     ))
         .toList();
   }
-
 
   @override
   Widget build(BuildContext context) {

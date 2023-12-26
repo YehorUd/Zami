@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 300, // Ustaw szerokość według własnych preferencji
+                  width: 300,
                   child: TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(
@@ -174,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16.0),
                 Container(
-                  width: 300, // Ustaw szerokość według własnych preferencji
+                  width: 300,
                   child: TextField(
                     controller: _passwordController,
                     decoration: InputDecoration(

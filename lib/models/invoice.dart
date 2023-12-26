@@ -1,12 +1,9 @@
-// invoice.dart
-
 class Invoice {
   final InvoiceInfo info;
   final Supplier supplier;
   final Customer customer;
   final List<InvoiceItem> items;
 
-  // Additional properties
   final String location;
   final double netTotalAmount;
   final double vatTotalAmount;
@@ -53,7 +50,6 @@ class InvoiceItem {
   final double vat;
   final double unitPrice;
 
-  // Additional fields
   final double netAmount;
   final double vatAmount;
   final double grossAmount;

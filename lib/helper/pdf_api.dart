@@ -48,7 +48,6 @@ class PdfApi {
             base: ttfFontRegular,
             bold: ttfFontBold,
           ),
-          // Dodaj informację o ilości stron na dole faktury
           footer: (pw.Context context) {
             return pw.Container(
               alignment: pw.Alignment.center,
@@ -111,27 +110,27 @@ class PdfApi {
                     pw.Paragraph(
                       text: 'Nazwa Firmy: ${invoice.supplier.name}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Adres: ${invoice.supplier.address}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Kod pocztowy: ${invoice.supplier.postalCode}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Miejscowość: ${invoice.supplier.city}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'NIP: ${invoice.supplier.nip}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                   ],
                 ),
@@ -153,27 +152,27 @@ class PdfApi {
                     pw.Paragraph(
                       text: 'Imie i Nazwisko: ${invoice.customer.name}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Adres: ${invoice.customer.address}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Kod pocztowy: ${invoice.customer.postalCode}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'Miejscowość: ${invoice.customer.city}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                     pw.Paragraph(
                       text: 'NIP: ${invoice.customer.nip}',
                       style: pw.TextStyle(fontSize: 12),
-                      margin: pw.EdgeInsets.only(bottom: 4), // Dostosowany odstęp
+                      margin: pw.EdgeInsets.only(bottom: 4),
                     ),
                   ],
                 ),
@@ -181,7 +180,7 @@ class PdfApi {
             ),
 
 
-            pw.SizedBox(height: 20), // Add some space
+            pw.SizedBox(height: 20),
 
             // Invoice items
             pw.Table.fromTextArray(
@@ -210,7 +209,7 @@ class PdfApi {
               cellAlignment: pw.Alignment.centerLeft,
             ),
 
-            pw.SizedBox(height: 10), // Add some space
+            pw.SizedBox(height: 10),
 
             // Summary table
             pw.Table.fromTextArray(
@@ -235,7 +234,7 @@ class PdfApi {
               cellAlignment: pw.Alignment.centerLeft,
             ),
 
-            pw.SizedBox(height: 10), // Add some space
+            pw.SizedBox(height: 10),
 
             // Total amount in words
             pw.Paragraph(
@@ -247,7 +246,7 @@ class PdfApi {
               ),
             ),
 
-            pw.SizedBox(height: 20), // Add some space
+            pw.SizedBox(height: 20),
 
             // Payment details
             pw.Paragraph(
@@ -268,7 +267,7 @@ class PdfApi {
               text: 'Metoda płatności: ${invoice.paymentType}',
               style: pw.TextStyle(fontSize: 12),
             ),
-            pw.SizedBox(height: 20), // Add some space
+            pw.SizedBox(height: 20),
 
             // Additional text at the bottom with OpenSans-LightItalic.ttf
             pw.Paragraph(

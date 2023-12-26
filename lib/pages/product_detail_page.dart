@@ -5,13 +5,13 @@ import 'package:zami/pages/cart_page.dart';
 class ProductDetailPage extends StatefulWidget {
   final Product product;
   final List<CartItem> cartItems;
-  final Function(List<CartItem>) onCartUpdated; // Dodaj callback
+  final Function(List<CartItem>) onCartUpdated;
 
   const ProductDetailPage({
     Key? key,
     required this.product,
     required this.cartItems,
-    required this.onCartUpdated, // Dodaj callback
+    required this.onCartUpdated,
   }) : super(key: key);
 
   @override
@@ -106,9 +106,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       quantity: selectedQuantity,
     ));
 
-    widget.onCartUpdated(widget.cartItems); // Wywołaj callback
+    widget.onCartUpdated(widget.cartItems);
 
-    // Przekieruj do ProductsPage z danymi o dodanym produkcie
     Navigator.of(context).pop(widget.cartItems);
   }
 

@@ -52,8 +52,8 @@ class CategoriesPage extends StatelessWidget {
                   SizedBox(width: 24),
                       _buildCategoryButton(
                         context,
-                        'dodatki', // Dodano nową kategorię "Dodatki"
-                        'assets/images/dodatki.png', // Zdjęcie dla nowej kategorii
+                        'dodatki',
+                        'assets/images/dodatki.png',
                         'Dodatki',
                       ),
                   ],

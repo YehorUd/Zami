@@ -43,7 +43,7 @@ class _MainPageState extends State<MainPage> {
   late List<Widget> _screens = [
     CategoriesPage(productRepository: productRepository),
     ProductsPage(productRepository: productRepository, category: null),
-    MyInvoicesPage(newInvoice: null), // Domyślna wartość dla newInvoice
+    MyInvoicesPage(newInvoice: null),
   ];
 
   void _onTabSelected(int index) {

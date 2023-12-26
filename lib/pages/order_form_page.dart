@@ -70,7 +70,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     hintText: '00-000',
                   ),
                   keyboardType: TextInputType.number,
-                  maxLength: 6, // Zwiększ maksymalną długość do 6 (np. 00-000)
+                  maxLength: 6,
                   onChanged: (value) {
                     if (value.length == 2) {
                       _postalCodeController.text = '$value-';
