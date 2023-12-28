@@ -1,5 +1,5 @@
 # Zami - Zamów mnie
-
+## English version:
 ## Overview
 
 "Zami - Zamów mnie" is a simple and intuitive application designed for quick fast food orders. Developed as a part of the final project for the Computer Science program at Wrocław Academy of Business.
@@ -79,3 +79,86 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Polska wersja:
+# Zami - Zamów mnie
+
+## Przegląd
+
+"Zami - Zamów mnie" to prosta i intuicyjna aplikacja stworzona do szybkich zamówień jedzenia fast food. Rozwijana jako część projektu końcowego na kierunku informatyka na Wrocławskiej Akademii Biznesu.
+
+## Spis treści
+
+- [Zami - Zamów mnie](#zami---zamów-mnie)
+  - [Przegląd](#przegląd)
+  - [Spis treści](#spis-treści)
+  - [Funkcje](#funkcje)
+  - [Polityka Prywatności](#polityka-prywatności)
+  - [Regulamin](#regulamin)
+  - [Instalacja](#instalacja)
+  - [Użycie](#użycie)
+  - [Integracja z Google Pay](#integracja-z-google-pay)
+  - [Współtworzenie](#współtworzenie)
+  - [Pierwsze kroki](#pierwsze-kroki)
+
+## Funkcje
+
+- **Szybkie zamówienia**: Szybko składaj zamówienia na ulubione dania fast food.
+- **Przyjazny interfejs użytkownika**: Prosty i intuicyjny design dla płynnego doświadczenia użytkownika.
+- **Bezpieczna rejestracja**: Zarejestruj się z pewnością, wiedząc, że Twoje dane są bezpieczne.
+- **Integracja z Google Pay**: Wygodne płatności przy użyciu Google Pay.
+- **Generowanie faktur PDF**: Generuj i przeglądaj faktury za swoje zamówienia.
+- **Integracja z Firebase**: Wykorzystuje Firebase do efektywnego przechowywania danych.
+
+## Polityka Prywatności
+
+Zajrzyj do [Polityki Prywatności](./lib/RODO/privacy_policy_page.dart), aby dowiedzieć się, jak zbieramy, używamy i chronimy Twoje dane osobowe.
+
+## Regulamin
+
+Przeczytaj [Regulamin](./lib/RODO/terms_page.dart), aby zrozumieć warunki korzystania z tej aplikacji.
+
+## Instalacja
+
+Aby zainstalować i uruchomić aplikację, wykonaj poniższe kroki:
+
+1. Sklonuj repozytorium.
+   ```bash
+   git clone https://github.com/YehorUd/Zami.git
+   ```
+2. Przejdź do katalogu projektu.
+   ```bash
+   cd Zami
+   flutter pub get
+   ```
+3. Uruchom aplikację:
+   ```bash
+   flutter run
+   ```
+## Użycie
+
+1. Uruchom aplikację na swoim urządzeniu lub emulatorze.
+2. Zarejestruj konto lub zaloguj się, jeśli już je posiadasz.
+3. Przejrzyj menu i złóż zamówienie.
+4. Ciesz się fast foodem!
+
+## Integracja z Google Pay
+
+Aplikacja obsługuje Google Pay dla płynnych i bezpiecznych transakcji płatniczych.
+
+## Wkład
+
+Wkład jest mile widziany! Jeśli masz jakieś pomysły na ulepszenia lub znalazłeś jakieś błędy, otwórz zgłoszenie lub prześlij żądanie ściągnięcia.
+
+## Pierwsze kroki
+
+Ten projekt jest punktem wyjścia dla aplikacji Flutter.
+
+Kilka zasobów, które pomogą Ci zacząć, jeśli jest to Twój pierwszy projekt Flutter:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- Książka kucharska: Przydatne próbki Flutter](https://docs.flutter.dev/cookbook)
+
+Aby uzyskać pomoc w rozpoczęciu pracy z Flutter, zobacz
+[dokumentacja online](https://docs.flutter.dev/), która oferuje samouczki,
+przykłady, wskazówki dotyczące rozwoju aplikacji mobilnych i pełne odniesienie do API.
