@@ -128,9 +128,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 alignment: Alignment.center,
                 child: Image.asset(
                   'assets/images/${widget.product.imageName}.jpg',
-                  height: 400.0, // Ustaw wysokość obrazu na odpowiednią wartość
-                  width: 500.0, // Ustaw szerokość obrazu na odpowiednią wartość
-                  fit: BoxFit.cover, // Dopasuj obraz do okna
+                  height: 400.0,
+                  width: 500.0,
+                  fit: BoxFit.cover,
                 ),
               ),
               SizedBox(height: 16.0),

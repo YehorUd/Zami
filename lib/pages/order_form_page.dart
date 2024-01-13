@@ -23,7 +23,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       ),
       body: Center(
         child: Container(
-          width: 400, // Szerokość kontenera
+          width: 400,
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(16.0),
@@ -121,7 +121,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
                       onPressed: () {
                         // Validate the form
                         if (_formKey.currentState?.validate() ?? false) {
-                          // Create a Customer object with the entered information
                           Customer customer = Customer(
                             name: _nameController.text,
                             address: _addressController.text,
@@ -130,7 +129,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
                             nip: _nipController.text.isEmpty ? '—' : _nipController.text,
                           );
 
-                          // Send the customer object to the previous screen
                           Navigator.pop(context, OrderFormResult(customer: customer));
                         }
                       },
