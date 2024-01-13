@@ -90,6 +90,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       },
     );
   }
+
   void _addToCart() {
     final existingCartItem = widget.cartItems.firstWhere(
           (item) => item.productName == widget.product.name,
@@ -111,7 +112,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     Navigator.of(context).pop(widget.cartItems);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,29 +120,43 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset('assets/images/${widget.product.imageName}.jpg'),
-            SizedBox(height: 16.0),
-            Text(
-              'Cena: ${widget.product.price} zł',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: Image.asset(
+                  'assets/images/${widget.product.imageName}.jpg',
+                  height: 400.0, // Ustaw wysokość obrazu na odpowiednią wartość
+                  width: 500.0, // Ustaw szerokość obrazu na odpowiednią wartość
+                  fit: BoxFit.cover, // Dopasuj obraz do okna
+                ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              'Opis: ${widget.product.description}',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _showQuantityDialog,
-              child: Text('Dodaj do koszyka'),
-            ),
-          ],
+              SizedBox(height: 16.0),
+              Text(
+                'Cena: ${widget.product.price} zł',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Opis: ${widget.product.description}',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              SizedBox(height: 16.0),
+              SizedBox(height: 16.0),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: _showQuantityDialog,
+                  child: Text('Dodaj do koszyka'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

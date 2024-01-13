@@ -29,11 +29,11 @@
 
 ## Privacy Policy
 
-Please refer to the [Privacy Policy](./RODO/privacy_policy_page.dart) for information on how we collect, use, and protect your personal data.
+Please refer to the [Privacy Policy](./lib/RODO/privacy_policy_page.dart) for information on how we collect, use, and protect your personal data.
 
 ## Terms of Service
 
-Read the [Terms of Service](./RODO/terms_page.dart) to understand the conditions governing the use of this application.
+Read the [Terms of Service](./lib/RODO/terms_page.dart) to understand the conditions governing the use of this application.
 
 ## Installation
 

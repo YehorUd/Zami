@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zami',
+      debugShowCheckedModeBanner: false,
       theme: appTheme,
       home: LoginPage(),
     );
