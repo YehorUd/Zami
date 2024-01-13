@@ -8,6 +8,7 @@ import 'package:bcrypt/bcrypt.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_enterprise.dart';
 import 'package:recaptcha_enterprise_flutter/recaptcha_action.dart';
 
+// Strona rejestracji
 class RegistrationPage extends StatefulWidget {
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
@@ -17,15 +18,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Kontrolery dla pól tekstowych
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
+  // Flagi do obsługi widoczności hasła, zgody, i reCAPTCHA
   bool _isPasswordVisible1 = false;
   bool _isPasswordVisible2 = false;
   bool _isAgreeChecked = false;
   bool _isRecaptchaChecked = false;
 
+  // Obiekt reCAPTCHA
   final _recaptchaEnterprisePlugin = RecaptchaEnterprise();
 
   @override
@@ -34,6 +38,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     _initRecaptcha();
   }
 
+  // Inicjalizacja reCAPTCHA
   void _initRecaptcha() async {
     String siteKey = '6Lc58DspAAAAAADqgbFlG4qFz76s236CUPxSB1r_';
 
@@ -44,8 +49,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  // Rejestracja użytkownika
   void _register() async {
     try {
+      // Sprawdzenie zgody i reCAPTCHA
       if (!_isAgreeChecked || !_isRecaptchaChecked) {
         _showErrorDialog(
             'Błąd rejestracji',
@@ -53,9 +60,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return;
       }
 
+      // Generowanie soli i hashowanie hasła
       final salt = BCrypt.gensalt();
       final hashedPassword = hashPassword(_passwordController.text);
 
+      // Sprawdzenie poprawności wprowadzonych danych
       if (_emailController.text.isEmpty ||
           _passwordController.text.isEmpty ||
           _confirmPasswordController.text.isEmpty) {
@@ -64,24 +73,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return;
       }
 
+      // Sprawdzenie zgodności wprowadzonych haseł
       if (_passwordController.text != _confirmPasswordController.text) {
         _showErrorDialog('Błąd rejestracji',
             'Hasła nie są identyczne. Sprawdź wprowadzone dane i spróbuj ponownie.');
         return;
       }
 
+      // Wykonanie reCAPTCHA
       bool recaptchaResult = await _executeRecaptcha();
 
       if (!recaptchaResult) {
         return;
       }
 
+      // Rejestracja w Firebase
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: hashedPassword,
       );
 
+      // Dodanie użytkownika do kolekcji Firestore
       if (userCredential.user != null) {
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'email': _emailController.text,
@@ -89,16 +102,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'salt': salt,
         });
 
+        // Powrót do poprzedniego ekranu po udanej rejestracji
         Navigator.pop(context);
       }
     } catch (e) {
       print('Firebase Error: $e');
 
+      // Obsługa błędu podczas rejestracji
       _showErrorDialog('Błąd rejestracji',
           'Wystąpił błąd podczas rejestracji. Sprawdź swoje dane i spróbuj ponownie.');
     }
   }
 
+  // Wykonanie reCAPTCHA
   Future<bool> _executeRecaptcha() async {
     try {
       String result = await RecaptchaEnterprise.execute(
@@ -120,11 +136,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  // Wyświetlenie komunikatu o błędzie reCAPTCHA
   void _showRecaptchaErrorDialog() {
     _showErrorDialog('Błąd weryfikacji reCAPTCHA',
         'Weryfikacja reCAPTCHA nie powiodła się. Spróbuj ponownie.');
   }
 
+  // Wyświetlenie ogólnego komunikatu o błędzie
   void _showErrorDialog(String title, String content) {
     showDialog(
       context: context,
@@ -165,6 +183,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              // Pole tekstowe dla adresu email
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -172,6 +191,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
               ),
               SizedBox(height: 12.0),
+              // Pole tekstowe dla hasła
               TextField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible1,
@@ -189,6 +209,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
               ),
               SizedBox(height: 12.0),
+              // Pole tekstowe do potwierdzenia hasła
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: !_isPasswordVisible2,
@@ -206,6 +227,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
               ),
               SizedBox(height: 8.0),
+              // Checkbox i linki do warunków i polityki prywatności
               ListTile(
                 contentPadding: EdgeInsets.all(0),
                 leading: Checkbox(
@@ -219,6 +241,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 title: Text('Zgadzam się z '),
                 subtitle: Row(
                   children: [
+                    // Link do warunków
                     GestureDetector(
                       onTap: _navigateToTermsPage,
                       child: Text(
@@ -230,6 +253,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                     ),
                     Text(' i '),
+                    // Link do polityki prywatności
                     GestureDetector(
                       onTap: _navigateToPrivacyPolicyPage,
                       child: Text(
@@ -243,6 +267,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ],
                 ),
               ),
+              // Checkbox do potwierdzenia reCAPTCHA
               ListTile(
                 contentPadding: EdgeInsets.all(0),
                 leading: Checkbox(
@@ -258,6 +283,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 title: Text('Nie jestem robotem'),
               ),
               SizedBox(height: 24.0),
+              // Przycisk do zarejestrowania
               ElevatedButton(
                 onPressed: _register,
                 child: Text('Zarejestruj się'),
@@ -269,6 +295,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  // Nawigacja do strony z warunkami
   void _navigateToTermsPage() {
     Navigator.push(
       context,
@@ -276,6 +303,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  // Nawigacja do strony z polityką prywatności
   void _navigateToPrivacyPolicyPage() {
     Navigator.push(
       context,

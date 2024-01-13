@@ -17,6 +17,7 @@ class MyInvoicesPage extends StatefulWidget {
 class _MyInvoicesPageState extends State<MyInvoicesPage> {
   @override
   Widget build(BuildContext context) {
+    // Warunek określający, czy pokazać listę faktur czy nową fakturę.
     bool showInvoiceList = widget.newInvoice == null;
 
     return Scaffold(
@@ -32,6 +33,7 @@ class _MyInvoicesPageState extends State<MyInvoicesPage> {
             if (widget.newInvoice != null)
               Column(
                 children: [
+                  // Wyświetlanie numeru nowej faktury.
                   Text('Faktura: ${widget.newInvoice!.info.number}'),
                   ElevatedButton(
                     onPressed: () => _savePdf(context),
@@ -46,6 +48,7 @@ class _MyInvoicesPageState extends State<MyInvoicesPage> {
   }
 
   Future<void> _savePdf(BuildContext context) async {
+    // Prośba o uprawnienia do zapisu plików.
     var status = await Permission.storage.request();
     if (status.isGranted) {
       final pdfFile = await PdfApi.generate(widget.newInvoice!);
@@ -58,16 +61,20 @@ class _MyInvoicesPageState extends State<MyInvoicesPage> {
           downloadDir.createSync();
         }
 
+        // Tworzenie ścieżki i zapis pliku PDF.
         final path = '${downloadDir.path}/faktura_${widget.newInvoice!.info.number}.pdf';
         await File(path).writeAsBytes(pdfFile.readAsBytesSync());
 
+        // Wyświetlanie informacji o udanym zapisie pliku.
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Plik PDF z fakturą został pomyślnie zapisany w folderze Download.')),
         );
 
+        // Otwarcie zapisanego pliku PDF.
         PdfApi.openFile(File(path));
       }
     } else {
+     // Informacja o braku udzielonych uprawnień.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Nie udzielono uprawnień do zapisu plików.')),
       );

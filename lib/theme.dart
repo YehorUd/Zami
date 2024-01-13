@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 
+// Stworzenie niestandardowego motywu aplikacji
 final appTheme = ThemeData(
-  brightness: Brightness.light,
-  primaryColor: Colors.green,
+  brightness: Brightness.light, // Jasny motyw
+  primaryColor: Colors.green, // Główny kolor aplikacji - zielony
   colorScheme: ColorScheme.fromSwatch(
-    primarySwatch: Colors.green,
-    accentColor: Colors.purple,
+    primarySwatch: Colors.green, // Wybór kolorów bazujący na odcieniach zielonego
+    accentColor: Colors.purple, // Kolor akcentu - fioletowy
   ),
-  fontFamily: 'Roboto',
+  fontFamily: 'Roboto', // Domyślna czcionka aplikacji
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.green,
-    elevation: 0,
+    backgroundColor: Colors.green, // Kolor paska aplikacji
+    elevation: 0, // Brak cienia paska
     titleTextStyle: TextStyle(
-      color: Colors.white,
+      color: Colors.white, // Kolor tekstu na pasku aplikacji
       fontSize: 20,
       fontWeight: FontWeight.bold,
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.green,
-      foregroundColor: Colors.white,
+      backgroundColor: Colors.green, // Kolor przycisków "Elevated"
+      foregroundColor: Colors.white, // Kolor tekstu na przyciskach "Elevated"
       textStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
@@ -29,7 +30,7 @@ final appTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.green, // Kolor przycisków tekstowych
       textStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
@@ -38,19 +39,19 @@ final appTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.green),
+      borderSide: BorderSide(color: Colors.green), // Kolor obramowania pól tekstowych
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.green),
+      borderSide: BorderSide(color: Colors.green), // Kolor obramowania pól tekstowych w trybie focus
     ),
-    labelStyle: TextStyle(color: Colors.green),
+    labelStyle: TextStyle(color: Colors.green), // Kolor etykiety pól tekstowych
   ),
   textTheme: TextTheme(
-    titleLarge: TextStyle( // Zaktualizowano z 'headline6' na 'titleLarge'
+    titleLarge: TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.bold,
     ),
-    bodyMedium: TextStyle( // Zaktualizowano z 'bodyText2' na 'bodyMedium'
+    bodyMedium: TextStyle(
       fontSize: 16,
     ),
   ),

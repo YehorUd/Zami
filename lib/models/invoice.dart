@@ -1,10 +1,11 @@
+// Klasa reprezentująca fakturę
 class Invoice {
   final InvoiceInfo info;
   final Supplier supplier;
   final Customer customer;
   final List<InvoiceItem> items;
 
-  final String location;
+  final String location;  // Lokalizacja, do której przypisana jest faktura
   final double netTotalAmount;
   final double vatTotalAmount;
   final double grossTotalAmount;
@@ -29,11 +30,12 @@ class Invoice {
   });
 }
 
+// Klasa reprezentująca informacje o fakturze
 class InvoiceInfo {
-  final String description;
-  final String number;
-  final DateTime date;
-  final DateTime dueDate;
+  final String description;  // Opis faktury
+  final String number;       // Numer faktury
+  final DateTime date;       // Data wystawienia faktury
+  final DateTime dueDate;    // Termin płatności
 
   const InvoiceInfo({
     required this.description,
@@ -43,6 +45,7 @@ class InvoiceInfo {
   });
 }
 
+// Klasa reprezentująca pozycję na fakturze
 class InvoiceItem {
   final String description;
   final DateTime date;
@@ -66,10 +69,11 @@ class InvoiceItem {
   });
 }
 
+// Klasa reprezentująca dostawcę
 class Supplier {
   final String name;
   final String address;
-  final String paymentInfo;
+  final String paymentInfo;  // Informacje dotyczące płatności
   final String postalCode;
   final String city;
   final String nip;
@@ -84,6 +88,7 @@ class Supplier {
   });
 }
 
+// Klasa reprezentująca klienta
 class Customer {
   final String name;
   final String address;

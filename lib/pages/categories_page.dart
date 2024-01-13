@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'products_page.dart';
 import 'package:zami/repository/product_repository.dart';
 
+// Strona wyświetlająca kategorie produktów
 class CategoriesPage extends StatelessWidget {
   final ProductRepository productRepository;
 
+  // Konstruktor przyjmujący repozytorium produktów
   const CategoriesPage({Key? key, required this.productRepository}) : super(key: key);
 
   @override
@@ -21,9 +23,11 @@ class CategoriesPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Pierwszy rząd kategorii
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Kategoria: Pizzas
                   _buildCategoryButton(
                     context,
                     'pizzas',
@@ -31,6 +35,7 @@ class CategoriesPage extends StatelessWidget {
                     'Pizzas',
                   ),
                   SizedBox(width: 24),
+                  // Kategoria: Hamburgers
                   _buildCategoryButton(
                     context,
                     'hamburgers',
@@ -40,9 +45,11 @@ class CategoriesPage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 24),
+              // Drugi rząd kategorii
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Kategoria: Drinks
                   _buildCategoryButton(
                     context,
                     'drinks',
@@ -50,18 +57,21 @@ class CategoriesPage extends StatelessWidget {
                     'Napoje',
                   ),
                   SizedBox(width: 24),
-                      _buildCategoryButton(
-                        context,
-                        'dodatki',
-                        'assets/images/dodatki.png',
-                        'Dodatki',
-                      ),
-                  ],
+                  // Kategoria: Dodatki
+                  _buildCategoryButton(
+                    context,
+                    'dodatki',
+                    'assets/images/dodatki.png',
+                    'Dodatki',
+                  ),
+                ],
               ),
-                  SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+              SizedBox(height: 24),
+              // Trzeci rząd kategorii
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Kategoria: Wszystkie produkty
                   _buildCategoryButton(
                     context,
                     null,
@@ -72,11 +82,12 @@ class CategoriesPage extends StatelessWidget {
               ),
             ],
           ),
-          ),
         ),
+      ),
     );
   }
 
+  // Funkcja budująca przycisk kategorii
   Widget _buildCategoryButton(
       BuildContext context,
       String? category,
@@ -88,11 +99,13 @@ class CategoriesPage extends StatelessWidget {
       height: 140,
       child: ElevatedButton(
         onPressed: () {
+          // Przejście do strony produktów po naciśnięciu przycisku
           navigateToProductsPage(context, category);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Obrazek kategorii
             Container(
               width: 80,
               height: 80,
@@ -102,6 +115,7 @@ class CategoriesPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8),
+            // Etykieta kategorii
             Text(
               label,
               textAlign: TextAlign.center,
@@ -120,6 +134,7 @@ class CategoriesPage extends StatelessWidget {
     );
   }
 
+  // Funkcja nawigująca do strony produktów
   void navigateToProductsPage(BuildContext context, String? category) {
     Navigator.push(
       context,

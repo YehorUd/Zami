@@ -8,8 +8,11 @@ import 'firebase_options.dart';
 import 'dart:io' show Platform;
 
 void main() async {
+  // Zapewnienie inicjalizacji wiązań dla Fluttera
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
+    // Inicjalizacja Firebase, obsługa różnych konfiguracji dla webu i innych platform
     if (kIsWeb) {
       await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -24,11 +27,14 @@ void main() async {
         ),
       );
     } else {
+      // Inicjalizacja Firebase dla innych platform
       await Firebase.initializeApp();
     }
 
+    // Uruchomienie aplikacji Flutter
     runApp(const MyApp());
   } catch (e) {
+    // Obsługa błędów podczas inicjalizacji Firebase
     print('Error initializing Firebase: $e');
   }
 }
@@ -38,6 +44,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Konfiguracja głównej aplikacji Flutter
     return MaterialApp(
       title: 'Zami',
       debugShowCheckedModeBanner: false,

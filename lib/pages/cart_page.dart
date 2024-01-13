@@ -1,3 +1,6 @@
+// Strona koszyka, gdzie użytkownik może przeglądać, usuwać produkty i dokonywać płatności
+
+// Importowanie niezbędnych pakietów i bibliotek
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,7 +11,9 @@ import 'dart:io';
 import 'package:zami/pages/my_invoices_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:zami/pages/order_form_page.dart';
+import 'package:zami/models/cart_item.dart';
 
+// Klasa reprezentująca stronę koszyka
 class CartPage extends StatefulWidget {
   final List<CartItem> cartItems;
 
@@ -19,13 +24,16 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  bool _isLoading = false;
-  OrderFormResult? orderFormResult;
+  bool _isLoading = false; // Zmienna informująca o tym, czy trwa ładowanie
+  OrderFormResult? orderFormResult; // Wynik formularza zamówienia
+
+  // Funkcja generująca elementy płatności
   List<PaymentItem> get paymentItems {
     List<PaymentItem> items = [];
 
-    double totalAmount = calculateTotalPrice();
+    double totalAmount = calculateTotalPrice(); // Obliczamy łączną kwotę
 
+    // Dodajemy element płatności do listy
     items.add(
       PaymentItem(
         amount: totalAmount.toStringAsFixed(2),
@@ -37,17 +45,24 @@ class _CartPageState extends State<CartPage> {
     return items;
   }
 
+  // Funkcja zwracająca konfigurację płatności
   Future<PaymentConfiguration> paymentConfiguration() async {
     return PaymentConfiguration.fromAsset('json/google_pay_config.json');
   }
 
+  // Obsługa wyniku płatności za pomocą Google Pay
   void onGooglePayResult(dynamic paymentResult, OrderFormResult orderFormResult) {
+
+    // Wypisujemy informacje o wyniku płatności w konsoli debugowania
     debugPrint('Payment Result: $paymentResult');
     debugPrint('Complete Payment Result: ${paymentResult.toString()}');
 
+    // Sprawdzamy, czy płatność zakończyła się sukcesem
     if (paymentResult != null && paymentResult['error'] == null) {
-      _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Google Pay');
+      _completePayment(orderFormResult: orderFormResult, paymentMethod: 'Google Pay');  // Kompletna obsługa płatności
     } else if (paymentResult != null && paymentResult['status'] == 'CANCELED') {
+
+      // Obsługa anulowanej płatności
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment canceled by user')),
       );
@@ -55,7 +70,7 @@ class _CartPageState extends State<CartPage> {
         _isLoading = false;
       });
     } else {
-      debugPrint('Google Pay Error: ${paymentResult['status']}');
+      debugPrint('Google Pay Error: ${paymentResult['status']}');  // Obsługa błędu płatności
 
       if (paymentResult != null && paymentResult['error'] != null) {
         final dynamic errorInfo = paymentResult['error'];
@@ -73,6 +88,7 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  // Funkcja usuwająca element z koszyka
   void _removeItem(int index) {
     setState(() {
       widget.cartItems.removeAt(index);
@@ -81,10 +97,13 @@ class _CartPageState extends State<CartPage> {
       }
     });
   }
+
+  // Kontrolery do wprowadzania danych karty kredytowej
   TextEditingController _cardNumberController = TextEditingController();
   TextEditingController _expiryDateController = TextEditingController();
   TextEditingController _cvcController = TextEditingController();
 
+  // Funkcja wyświetlająca okno dialogowe z danymi karty kredytowej
   void _showCardDetailsDialog(OrderFormResult orderFormResult) async {
     showDialog(
       context: context,
@@ -163,6 +182,7 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
+  // Funkcja walidująca dane karty kredytowej
   bool _validateCardDetails() {
     return _cardNumberController.text.isNotEmpty &&
         _cardNumberController.text.length == 16 &&
@@ -172,6 +192,7 @@ class _CartPageState extends State<CartPage> {
         _cvcController.text.length == 3;
   }
 
+  // Funkcja obsługująca proces zamówienia
   void _checkout() async {
     // Navigate to the order form page
     final orderFormResult = await Navigator.push(
@@ -196,6 +217,7 @@ class _CartPageState extends State<CartPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Komponent płatności Google Pay
                 GooglePayButton(
                   paymentConfiguration: config,
                   paymentItems: paymentItems,
@@ -237,6 +259,7 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
                 SizedBox(height: 15.0),
+                // Przycisk płatności przy odbiorze
                 ElevatedButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
@@ -245,6 +268,7 @@ class _CartPageState extends State<CartPage> {
                   },
                   child: Text('Przy odbiorze'),
                 ),
+                // Przycisk płatności kartą kredytową
                 ElevatedButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
@@ -271,6 +295,7 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+// Funkcja generująca paragon
   void printReceipt() {
     print('Receipt:');
     for (var cartItem in widget.cartItems) {
@@ -279,6 +304,7 @@ class _CartPageState extends State<CartPage> {
     print('Total: ${calculateTotalPrice()} zł');
   }
 
+  // Funkcja finalizująca płatność
   void _completePayment({required OrderFormResult orderFormResult, required String paymentMethod}) async {
     try {
       final pdfFile = await _generateInvoice(orderFormResult: orderFormResult, paymentMethod: paymentMethod);
@@ -345,6 +371,7 @@ class _CartPageState extends State<CartPage> {
         });
       }
     } catch (e) {
+      // Obsługa błędu płatności
       print('Błąd podczas przetwarzania płatności: $e');
       setState(() {
         _isLoading = false;
@@ -352,10 +379,12 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  // Funkcja zwracająca sformatowany sposób płatności
   String _getDisplayPaymentMethod(String paymentMethod) {
     return paymentMethod == 'Google Pay' ? 'Karta' : paymentMethod;
   }
 
+  // Funkcja zwracająca sformatowany sposób płatności
   String _getDisplayPaymentType(String paymentMethod) {
     switch (paymentMethod) {
       case 'Google Pay':
@@ -369,12 +398,14 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  // Funkcja generująca numer faktury
   String _generateInvoiceNumber() {
     final Random random = Random();
     final int invoiceNumber = random.nextInt(900000) + 100000;
     return invoiceNumber.toString();
   }
 
+  // Funkcja obliczająca łączną cenę
   double calculateTotalPrice() {
     double totalPrice = 0;
     for (var cartItem in widget.cartItems) {
@@ -383,7 +414,7 @@ class _CartPageState extends State<CartPage> {
     return totalPrice;
   }
 
-  // New function to generate the PDF invoice
+  // Funkcja generująca fakturę PDF
   Future<File?> _generateInvoice({required OrderFormResult orderFormResult, required String paymentMethod}) async {
     try {
       final supplier = Supplier(
@@ -443,21 +474,25 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  // Funkcja obliczająca łączną cenę netto
   double calculateNetTotal() {
     final netTotal = widget.cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
     return double.parse(netTotal.toStringAsFixed(2));
   }
 
+  // Funkcja obliczająca łączną wartość podatku VAT
   double calculateVatTotal() {
     final vatTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 0.23));
     return double.parse(vatTotal.toStringAsFixed(2));
   }
 
+  // Funkcja obliczająca łączną cenę brutto
   double calculateGrossTotal() {
     final grossTotal = widget.cartItems.fold(0.0, (sum, item) => sum + ((item.price * item.quantity) * 1.23));
     return double.parse(grossTotal.toStringAsFixed(2));
   }
 
+  // Funkcja konwertująca elementy koszyka na elementy faktury
   List<InvoiceItem> _convertCartItemsToInvoiceItems() {
     return widget.cartItems
         .map((cartItem) => InvoiceItem(
@@ -473,6 +508,7 @@ class _CartPageState extends State<CartPage> {
         .toList();
   }
 
+  // Implementacja metody build dla strony koszyka
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -597,16 +633,4 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-}
-
-class CartItem {
-  final String productName;
-  final int quantity;
-  final double price;
-
-  CartItem({
-    required this.productName,
-    required this.quantity,
-    required this.price,
-  });
 }

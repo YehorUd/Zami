@@ -3,6 +3,7 @@ import 'package:zami/models/product_model.dart';
 import 'package:zami/repository/product_repository.dart';
 import 'package:zami/pages/cart_page.dart';
 import 'package:zami/pages/product_detail_page.dart';
+import 'package:zami/models/cart_item.dart';
 
 class ProductsPage extends StatefulWidget {
   final ProductRepository productRepository;
@@ -26,9 +27,10 @@ class _ProductsPageState extends State<ProductsPage> {
   void initState() {
     super.initState();
     fetchProducts();
-    cartItems = [];
+    cartItems = [];  // Inicjalizacja listy koszyka
   }
 
+  // Pobieranie produktów zależnie od kategorii lub wszystkich
   Future<void> fetchProducts() async {
     print('Category: ${widget.category}');
     List<Product> productList = [];
@@ -44,6 +46,7 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
+  // Dodawanie produktu do koszyka
   void addToCart(String productName, double? price, int quantity) {
     setState(() {
       final existingCartItem = cartItems.firstWhere(
@@ -60,6 +63,7 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
+  // Pokazywanie dialogu do wyboru ilości produktu
   void _showQuantityDialog(String productName, double price) {
     int quantity = 1;
 
@@ -132,6 +136,7 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
+  // Otwieranie strony koszyka
   void _openCartPage() async {
     final result = await Navigator.push(
       context,
@@ -147,6 +152,7 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
+  // Otwieranie strony szczegółów produktu
   void _openProductDetailPage(Product product) async {
     final updatedCartItems = await Navigator.push(
       context,
@@ -169,8 +175,6 @@ class _ProductsPageState extends State<ProductsPage> {
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

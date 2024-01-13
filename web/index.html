@@ -2,51 +2,65 @@
 <html>
 <head>
   <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    Jeśli serwujesz swoją aplikację internetową w ścieżce innej niż główna, zmień
+    wartość atrybutu href poniżej, aby odzwierciedlić bazową ścieżkę serwowania.
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    Ścieżka podana poniżej musi zaczynać się i kończyć ukośnikiem "/", aby działać poprawnie.
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    Więcej informacji:
+    * https://developer.mozilla.org/pl/docs/Web/HTML/Element/base
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
+    To jest zmienna zastępcza dla atrybutu href, która zostanie zastąpiona wartością
+    argumentu `--base-href` dostarczonego do `flutter build`.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
+  <!-- Ustawienie kodowania znaków dokumentu -->
   <meta charset="UTF-8">
+
+  <!-- Zapewnienie zgodności z Internet Explorer -->
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+
+  <!-- Opis projektu Flutter -->
+  <meta name="description" content="Nowy projekt Fluttera.">
+
+  <!-- ID klienta Google Sign-In do autentykacji -->
   <meta name="google-signin-client_id" content="618640597187-7pmf2s5ce2r0f6sfjopoc0urh2j6bqbf.apps.googleusercontent.com">
-  <!-- iOS meta tags & icons -->
+
+  <!-- Meta tagi i ikony dla iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Zami">
   <link rel="apple-touch-icon" href="icons/logo_app.png">
 
-  <!-- Favicon -->
+  <!-- Favicon dla strony internetowej -->
   <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 
+  <!-- Ustawienie tytułu strony internetowej -->
   <title>Zami</title>
+
+  <!-- Łącze do pliku manifestu aplikacji internetowej -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- Skrypt inicjalizujący Flutter -->
   <script>
-    // The value below is injected by flutter build, do not touch.
+    // Wartość poniżej jest wstrzykiwana przez `flutter build`, nie dotykaj.
     const serviceWorkerVersion = null;
   </script>
-  <!-- This script adds the flutter initialization JS code -->
+  <!-- Ten skrypt dodaje kod inicjalizacyjny Fluttera -->
   <script src="flutter.js" defer></script>
 </head>
 <body>
-  <script>
+<!-- Skrypt do ładowania aplikacji Flutter po pełnym załadowaniu strony -->
+<script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
+      // Pobierz plik main.dart.js i zainicjalizuj silnik Fluttera
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
+          // Zainicjalizuj silnik Fluttera i uruchom aplikację
           engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
           });

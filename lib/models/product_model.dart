@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Klasa reprezentująca produkt
 class Product {
-  final String id;
-  final String name;
-  final double price;
-  final String category;
-  final String imageName;
-  final String description;
+  final String id;           // Unikalny identyfikator produktu
+  final String name;         // Nazwa produktu
+  final double price;        // Cena produktu
+  final String category;     // Kategoria produktu
+  final String imageName;    // Nazwa obrazu produktu
+  final String description;  // Opis produktu
 
   Product({
     required this.id,
@@ -17,6 +18,7 @@ class Product {
     required this.description,
   });
 
+  // Konstruktor fabryczny tworzący instancję produktu na podstawie dokumentu Firestore
   factory Product.fromDocumentSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Product(
@@ -29,6 +31,7 @@ class Product {
     );
   }
 
+  // Metoda pozwalająca na kopiowanie produktu i jednocześnie dokonywanie zmian
   Product copyWith({
     String? id,
     String? name,

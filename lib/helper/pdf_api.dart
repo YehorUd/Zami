@@ -6,31 +6,34 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:zami/models/invoice.dart';
 
+// Klasa obsługująca operacje związane z generowaniem i zapisem plików PDF
 class PdfApi {
+  // Metoda do zapisywania dokumentu PDF na urządzeniu
   static Future<File> saveDocument({
     required String name,
     required pw.Document pdf,
   }) async {
+    // Zapisanie dokumentu PDF do pliku
     final bytes = await pdf.save();
-
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/$name');
-
     await file.writeAsBytes(bytes);
-
     return file;
   }
 
+  // Metoda do otwierania istniejącego pliku
   static Future openFile(File file) async {
     final url = file.path;
-
     await OpenFile.open(url);
   }
 
+  // Metoda do generowania dokumentu PDF na podstawie faktury
   static Future<File> generate(Invoice invoice) async {
     try {
+      // Inicjalizacja dokumentu PDF
       final pdf = pw.Document();
 
+      // Ładowanie czcionek
       final fontDataRegular =
       await rootBundle.load("assets/fonts/OpenSans-Regular.ttf");
       final fontDataBold =
@@ -38,16 +41,20 @@ class PdfApi {
       final fontDataLightItalic =
       await rootBundle.load("assets/fonts/OpenSans-LightItalic.ttf");
 
+      // Definicja czcionek
       final ttfFontRegular = pw.Font.ttf(fontDataRegular.buffer.asByteData());
       final ttfFontBold = pw.Font.ttf(fontDataBold.buffer.asByteData());
       final ttfFontLightItalic = pw.Font.ttf(fontDataLightItalic.buffer.asByteData());
 
+      // Dodanie strony do dokumentu
       pdf.addPage(
         pw.MultiPage(
+          // Konfiguracja tematu strony
           theme: pw.ThemeData.withFont(
             base: ttfFontRegular,
             bold: ttfFontBold,
           ),
+          // Konfiguracja stopki strony
           footer: (pw.Context context) {
             return pw.Container(
               alignment: pw.Alignment.center,
@@ -61,6 +68,7 @@ class PdfApi {
               ),
             );
           },
+          // Budowanie treści strony
           build: (context) => [
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.end,
@@ -268,8 +276,6 @@ class PdfApi {
               style: pw.TextStyle(fontSize: 12),
             ),
             pw.SizedBox(height: 20),
-
-            // Additional text at the bottom with OpenSans-LightItalic.ttf
             pw.Paragraph(
               text: 'Dokument wystawiony automatycznie nie wymagający podpisu.',
               style: pw.TextStyle(
@@ -282,7 +288,7 @@ class PdfApi {
           ],
         ),
       );
-
+      // Zapisanie i zwrócenie pliku PDF
       return saveDocument(name: 'faktura.pdf', pdf: pdf);
     } catch (e) {
       print('Błąd generowania PDF: $e');
@@ -291,15 +297,19 @@ class PdfApi {
   }
 }
 
+// Klasa narzędziowa zawierająca pomocnicze metody
 class Utils {
+  // Metoda do formatowania daty
   static String formatDate(DateTime date) {
     return "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}";
   }
 
+  // Metoda do formatowania ceny
   static String formatPrice(double price) {
     return "${price.toStringAsFixed(2)} zł";
   }
 
+// Metoda zamieniająca kwotę na słowa
   static String amountInWords(double amount) {
     final wholePart = amount.floor();
     final decimalPart = ((amount - wholePart) * 100).round();
@@ -314,6 +324,7 @@ class Utils {
     return '$wholeText$decimalText';
   }
 
+// Metoda prywatna konwertująca liczbę poniżej tysiąca na słowa
   static String _convertToWords(int number) {
     final units = ['', 'jeden', 'dwa', 'trzy', 'cztery', 'pięć', 'sześć', 'siedem', 'osiem', 'dziewięć'];
     final teens = ['dziesięć', 'jedenaście', 'dwanaście', 'trzynaście', 'czternaście', 'piętnaście', 'szesnaście', 'siedemnaście', 'osiemnaście', 'dziewiętnaście'];
